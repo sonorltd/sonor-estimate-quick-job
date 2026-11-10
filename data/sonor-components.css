@@ -1,0 +1,1014 @@
+/* sonor-components.css — shared component styles per Spine rule S-4.4. (v0.19.1 2026-10-07: §18 the ⌘K palette row hover no longer nudges (B-516); v0.19.0 2026-10-02: §25 stage law — crisp pills, one stage colour everywhere (wq-stage-* / swq-stage-* / proj-stage-* → --stage); v0.18.1 2026-10-01: status tones retuned; v0.18.0 2026-10-01: §23 traffic light — warn/no-answer pills on --status-amber, .pill-amber alias; v0.17.1 2026-09-30: dark ladder for legacy dark theme names; v0.17.0 2026-09-29: §18 hover/focus law — one wash, no lifts; v0.18.0 2026-09-30: rack view; catalogue picker; v0.16.0: .s-pill; .s-paper; sortable styles; bar ladder tokens; locked = red; CSV controls hidden; graphite dark-theme aliases + re-tints, B-487; v0.9.0 2026-09-29: WQ modal kit on the brand scale tokens + skeleton / empty / motion, B-478 ph2 + B-479; v0.8.0 2026-09-28: icons / menus / chips kit, B-478)
+   Synced to every "APP - {slug}"/data/sonor-components.css via sync-everything.sh.
+   Edit here ONLY — never edit a per-app copy.
+
+   Rules (Spine v1.2):
+   - Pure CSS — no app-specific selectors, no brand hex values.
+   - All colours reference CSS custom properties defined upstream in data/brand.css
+     + data/app-vars.css (aliases).
+   - Tinted variants use color-mix() against semantic tokens — never raw hex.
+   - Apps extend via their local <style> block, they do not override here.
+
+   Component index (classes shipped by this file):
+     .card                   — padded bordered surface block (var(--surface-card))
+     .card-header            — flex row for card title + actions
+     .grid, .grid-2/3/4      — responsive auto-fit grid helpers
+     .kpi, .kpi-label/value/sub — KPI tile (label, big value, sub line)
+     .progress, .progress-bar — thin progress bar, accent-gradient fill
+     .pill                   — small uppercase status pill (base)
+     .pill-red/yellow/green/grey/blue/purple — semantic tinted pills
+     .service-pill           — service-coloured pill (uses --bg inline style)
+     .btn                    — default ghost-surface button
+     .btn-primary            — filled accent button
+     .btn-ghost              — transparent borderless button
+     .btn-sm                 — compact size modifier
+     .input, .textarea, .select — form field base
+     .field-label            — uppercase form label
+     .table                  — full-width row-striped table
+     .badge                  — neutral inline badge
+     .status-indicator       — dot + label (connecting/live/offline/error)
+     .status-dot             — just the dot (sibling of .status-label)
+     .empty-state            — centred muted placeholder block
+     .tab-bar                — horizontal tab row
+     .tab-btn                — individual tab button
+     .tab-count              — numeric count inside a tab button
+     .nav-actions            — right-aligned actions container (margin-left:auto)
+     .modal-backdrop         — fixed full-screen dim layer
+     .modal-card             — centred card inside backdrop
+     .modal-actions          — flex-end row of buttons inside a modal
+     .modal-close            — absolute top-right X button
+     .source-toggle          — Drive / GitHub segmented control
+     .role-toggle            — generic segmented control (mirrors source-toggle)
+     .row, .spread           — flex helpers
+     .muted, .small, .tiny   — text utilities
+     .hidden                 — display:none !important utility
+*/
+
+/* ======================================================
+   Cards
+   ====================================================== */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.card h2 { margin-top: 0; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.card-header h2 { margin-bottom: 0; }
+
+/* ======================================================
+   Grid helpers
+   ====================================================== */
+.grid { display: grid; gap: 14px; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+/* ======================================================
+   KPI tiles
+   ====================================================== */
+.kpi {
+  background: var(--section-1);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 12px 14px;
+}
+.kpi .kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.kpi .kpi-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+.kpi .kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ======================================================
+   Progress bar
+   ====================================================== */
+.progress {
+  height: 8px;
+  background: var(--section-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+}
+
+/* ======================================================
+   Pills / badges
+
+   Semantic tints use color-mix() so they always ride the
+   active theme. Text colour darkens from the same seed.
+   ====================================================== */
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 11px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* danger / warn / ok / info / muted / accent-tinted pills — all driven by theme tokens */
+/* v0.19.0 (2026-10-02, sonor-platform §26): pills are CRISP — the full status token as ink + a hairline of it, never the
+   60%-mixed pastel. Four tints, one meaning across every app (who holds it):
+     amber = ours to do · blue = with the client · green = yes · red = no · grey = nothing yet */
+.pill-red {
+  background: color-mix(in srgb, var(--status-bad, var(--danger)) 16%, transparent);
+  color: var(--status-bad, var(--danger));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-bad, var(--danger)) 45%, transparent);
+}
+.pill-yellow, .pill-amber {   /* §23: the warn pill is AMBER (--status-amber); .pill-yellow kept as an alias */
+  background: color-mix(in srgb, var(--status-amber, var(--warn)) 16%, transparent);
+  color: var(--status-amber, var(--warn));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-amber, var(--warn)) 45%, transparent);
+}
+.pill-green {
+  background: color-mix(in srgb, var(--status-ok, var(--ok)) 16%, transparent);
+  color: var(--status-ok, var(--ok));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-ok, var(--ok)) 45%, transparent);
+}
+.pill-grey {
+  background: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  color: var(--text-secondary);
+}
+.pill-blue {
+  background: color-mix(in srgb, var(--info) 16%, transparent);
+  color: var(--info);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--info) 45%, transparent);
+}
+/* §26 STAGE LAW — one colour per WeQuote / project stage, everywhere. Put the stage class on any pill / chip / dot and it takes
+   the right tint: `.pill.wq-stage-sent`, `.swq-stage-in-progress`, `.proj-stage-won`, or read var(--stage) yourself. */
+.wq-stage-in_progress, .wq-stage-in-progress, .wq-stage-planned, .wq-stage-pushed, .wq-stage-synced, .wq-stage-draft, .wq-stage-revising, .wq-stage-quoting,
+.swq-stage-in-progress, .swq-stage-draft, .proj-stage-quoting, .proj-stage-revising { --stage: var(--status-amber, var(--warn)); }
+.wq-stage-sent, .swq-stage-sent, .proj-stage-quoted { --stage: var(--info); }
+.wq-stage-accepted, .wq-stage-approved, .wq-stage-won, .wq-stage-complete, .swq-stage-accepted, .swq-stage-complete, .proj-stage-won, .proj-stage-complete { --stage: var(--status-ok, var(--ok)); }
+.wq-stage-cancelled, .wq-stage-declined, .wq-stage-expired, .wq-stage-lost, .swq-stage-cancelled, .swq-stage-declined, .proj-stage-cancelled, .proj-stage-lost { --stage: var(--status-bad, var(--danger)); }
+.proj-stage-enquiry { --stage: #b7b1a7; } .proj-stage-tender { --stage: #2d718b; } .proj-stage-active { --stage: #78ba57; } .proj-stage-install { --stage: #e37c59; }
+.proj-stage-commission { --stage: #e67eb1; } .proj-stage-snagging { --stage: #ec6061; } .proj-stage-on_hold { --stage: #8B7D6B; }
+.pill[class*="wq-stage-"], .pill[class*="proj-stage-"] {
+  background: color-mix(in srgb, var(--stage, var(--text-muted)) 16%, transparent);
+  color: var(--stage, var(--text-secondary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--stage, var(--text-muted)) 45%, transparent);
+}
+.pill-purple {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-primary));
+}
+
+/* Service-coloured pill — inline style="--bg:var(--sNN)" sets the dot colour */
+.service-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 5px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--section-1);
+  border: 1px solid var(--border);
+}
+.service-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg, var(--text-muted));
+}
+
+/* Neutral inline badge (smaller cousin of .pill — no uppercase) */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: 9px;
+  background: var(--section-2);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* ======================================================
+   Buttons
+   ====================================================== */
+.btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--cta-text, var(--body));
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-light);
+  color: var(--cta-text, var(--body));
+}
+.btn-sm {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  background: var(--section-1);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+/* ======================================================
+   Form fields
+   ====================================================== */
+.input,
+.textarea,
+.select {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 7px 10px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.12s;
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--accent);
+}
+.textarea {
+  resize: vertical;
+  min-height: 72px;
+  font-family: inherit;
+}
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+/* ======================================================
+   Tables
+   ====================================================== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--section-1);
+}
+.table tr:hover td {
+  background: var(--section-1);
+}
+
+/* ======================================================
+   DB / status indicator (dot + label)
+   Used by SonorApp.updateDbStatusIndicator().
+   ====================================================== */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--text-muted) 10%, transparent);
+  border-radius: 3px;
+  font-size: 11px;
+  color: var(--clay, var(--text-secondary));
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--warn);
+  transition: background 0.3s;
+}
+.status-indicator.live .status-dot    { background: var(--ok); }
+.status-indicator.offline .status-dot { background: var(--text-muted); }
+.status-indicator.error .status-dot   { background: var(--danger); }
+.status-label { letter-spacing: 0.02em; }
+
+/* ======================================================
+   Empty state
+   ====================================================== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ======================================================
+   Tabs (tab bar + buttons) — CANONICAL Master-Hub pattern (Spine S-4.14)
+   --------------------------------------------------------
+   Reference: sonor-master/index.html.
+   Contract:
+     - Container: <nav class="tab-bar"> or <div class="tab-bar">
+     - Children:  <button> | <button class="tab-btn"> | <div class="tab">
+     - Active state: .active (any of the above children)
+     - Right-rail actions: .nav-actions | .tab-actions (MUST be LAST child)
+   Visual language:
+     - Light strip (section-1 bg) sitting under the dark shared header
+     - Each tab underlined 3px with its POSITIONAL service colour
+       (tab #1 → --s01 purple, tab #2 → --s02 aqua, … tab #10 → --s10 charcoal)
+     - Tabs 11+ DO NOT repeat the cycle — they tail off into shades of grey,
+       cascading from --muted (warm grey) toward --body (brand white).
+       Design intent: service colours identify Sonor scope (max 10);
+       anything beyond is overflow and should visually recede.
+     - Active tab: darker text, bolder weight — NO background change
+   Positional service colour order is the workspace-wide default.
+   See Spine S-4.14 in SONOR-APP-SPINE.md.
+   ====================================================== */
+.tab-bar {
+  display: flex;
+  align-items: stretch;
+  background: var(--section-1);
+  color: var(--text-primary);
+  padding: 0 16px;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+/* Match naked <button> children, explicit .tab-btn, AND legacy <div class="tab"> */
+.tab-bar > button,
+.tab-bar .tab-btn,
+.tab-bar .tab {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: none;
+  color: var(--text-muted);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 10px 16px;
+  min-height: 40px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-bottom-color 0.15s, font-weight 0.15s;
+  display: inline-flex;
+  align-items: center;
+}
+.tab-bar > button:hover,
+.tab-bar .tab-btn:hover,
+.tab-bar .tab:hover {
+  color: var(--text-primary);
+  background: none;
+}
+.tab-bar > button.active,
+.tab-bar .tab-btn.active,
+.tab-bar .tab.active {
+  color: var(--text-primary);
+  font-weight: 700;
+  background: none;
+}
+.tab-bar .tab-btn .tab-count,
+.tab-bar > button .tab-count,
+.tab-bar .tab .tab-count {
+  font-size: 10px;
+  margin-left: 4px;
+  opacity: 0.75;
+}
+
+/* ── Positional service-colour underlines (Spine S-4.14) ──
+   Uses --s01..--s10 from brand.css (canonical 01 → 10 order).
+   Cycles every 10 children. Requires .nav-actions / .tab-actions to be LAST. */
+.tab-bar > :nth-child(10n+1) { border-bottom-color: var(--s01); }
+.tab-bar > :nth-child(10n+2) { border-bottom-color: var(--s02); }
+.tab-bar > :nth-child(10n+3) { border-bottom-color: var(--s03); }
+.tab-bar > :nth-child(10n+4) { border-bottom-color: var(--s04); }
+.tab-bar > :nth-child(10n+5) { border-bottom-color: var(--s05); }
+.tab-bar > :nth-child(10n+6) { border-bottom-color: var(--s06); }
+.tab-bar > :nth-child(10n+7) { border-bottom-color: var(--s07); }
+.tab-bar > :nth-child(10n+8) { border-bottom-color: var(--s08); }
+.tab-bar > :nth-child(10n+9) { border-bottom-color: var(--s09); }
+.tab-bar > :nth-child(10n+10) { border-bottom-color: var(--s10); }
+
+/* Overflow tail — tabs 11+ fade into brand white rather than repeating
+   --s01 (Cinema purple). Cascade: --muted → --body. Later-rule-wins over
+   the 10n+N cycle above. Positioned AFTER the cycle by design. */
+.tab-bar > :nth-child(11)  { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 30%); }
+.tab-bar > :nth-child(12)  { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 50%); }
+.tab-bar > :nth-child(13)  { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 65%); }
+.tab-bar > :nth-child(14)  { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 80%); }
+.tab-bar > :nth-child(15)  { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 90%); }
+.tab-bar > :nth-child(n+16) { border-bottom-color: color-mix(in srgb, var(--muted), var(--body) 95%); }
+
+/* Right-aligned actions container (must be LAST child so nth-child
+   positional colours land on the real tabs, not the actions rail). */
+.nav-actions,
+.tab-bar .tab-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+/* Clear the positional underline on the actions rail — it's not a tab. */
+.tab-bar > .nav-actions,
+.tab-bar > .tab-actions {
+  border-bottom: 0 !important;
+}
+.tab-bar .nav-actions select,
+.tab-bar .tab-actions select,
+.tab-bar .nav-actions > button:not(.tab-btn),
+.tab-bar .tab-actions > button:not(.tab-btn) {
+  font-family: inherit;
+  font-size: 12px;
+  background: var(--body);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  height: auto;
+}
+.tab-bar .nav-actions select,
+.tab-bar .tab-actions select { min-width: 180px; }
+.tab-bar .nav-actions > button:not(.tab-btn):hover,
+.tab-bar .tab-actions > button:not(.tab-btn):hover {
+  background: var(--section-2);
+}
+
+/* ======================================================
+   Sidebar nav — CANONICAL vertical equivalent (Spine S-4.14)
+   --------------------------------------------------------
+   For apps with a left-rail nav (Accounts, Project Master).
+   Same positional service-colour rule, rotated 90°:
+     - 3px LEFT-EDGE bar per item (instead of bottom underline)
+     - Same :nth-child(10n+N) positional cycle, same --s01..--s10
+     - Items 11+ tail off into shades of grey (same overflow
+       behaviour as .tab-bar) — no modulo wrap back to --s01
+   ====================================================== */
+.sidebar-nav > button,
+.sidebar-nav .nav-btn,
+.sidebar-nav .nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: none;
+  color: var(--text-muted);
+  border: 0;
+  border-left: 3px solid transparent;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: color 0.15s, border-left-color 0.15s, background 0.15s, font-weight 0.15s;
+}
+.sidebar-nav > button:hover,
+.sidebar-nav .nav-btn:hover,
+.sidebar-nav .nav-item:hover {
+  color: var(--text-primary);
+  background: var(--section-1);
+}
+.sidebar-nav > button.active,
+.sidebar-nav .nav-btn.active,
+.sidebar-nav .nav-item.active {
+  color: var(--text-primary);
+  font-weight: 700;
+  background: var(--section-1);
+}
+
+/* Positional left-edge bars — identical cycle to .tab-bar. */
+.sidebar-nav > :nth-child(10n+1) { border-left-color: var(--s01); }
+.sidebar-nav > :nth-child(10n+2) { border-left-color: var(--s02); }
+.sidebar-nav > :nth-child(10n+3) { border-left-color: var(--s03); }
+.sidebar-nav > :nth-child(10n+4) { border-left-color: var(--s04); }
+.sidebar-nav > :nth-child(10n+5) { border-left-color: var(--s05); }
+.sidebar-nav > :nth-child(10n+6) { border-left-color: var(--s06); }
+.sidebar-nav > :nth-child(10n+7) { border-left-color: var(--s07); }
+.sidebar-nav > :nth-child(10n+8) { border-left-color: var(--s08); }
+.sidebar-nav > :nth-child(10n+9) { border-left-color: var(--s09); }
+.sidebar-nav > :nth-child(10n+10) { border-left-color: var(--s10); }
+
+/* Overflow tail — items 11+ fade into brand white rather than repeating
+   --s01 (Cinema purple). Same cascade as .tab-bar but applied to
+   border-left-color. Later-rule-wins over the 10n+N cycle above.
+   Design intent: service colours identify Sonor scope (max 10);
+   anything beyond is overflow and should visually recede. */
+.sidebar-nav > :nth-child(11)  { border-left-color: color-mix(in srgb, var(--muted), var(--body) 30%); }
+.sidebar-nav > :nth-child(12)  { border-left-color: color-mix(in srgb, var(--muted), var(--body) 50%); }
+.sidebar-nav > :nth-child(13)  { border-left-color: color-mix(in srgb, var(--muted), var(--body) 65%); }
+.sidebar-nav > :nth-child(14)  { border-left-color: color-mix(in srgb, var(--muted), var(--body) 80%); }
+.sidebar-nav > :nth-child(15)  { border-left-color: color-mix(in srgb, var(--muted), var(--body) 90%); }
+.sidebar-nav > :nth-child(n+16) { border-left-color: color-mix(in srgb, var(--muted), var(--body) 95%); }
+
+/* ======================================================
+   Segmented toggles (source, role, any 2-way switch)
+   ====================================================== */
+.source-toggle,
+.role-toggle {
+  display: inline-flex;
+  background: var(--body);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+}
+.source-toggle button,
+.role-toggle button {
+  font-family: inherit;
+  font-size: 11px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 0;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.role-toggle button { font-size: 12px; font-weight: 500; padding: 4px 10px; }
+.source-toggle button.active,
+.role-toggle button.active {
+  background: var(--accent);
+  color: var(--cta-text, var(--body));
+}
+.source-toggle svg { width: 11px; height: 11px; }
+
+/* ======================================================
+   Modals (backdrop + card)
+   ====================================================== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: color-mix(in srgb, var(--footer-bg) 70%, transparent);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.show { display: flex; }
+.modal-card {
+  background: var(--surface-card);
+  border-radius: 8px;
+  padding: 20px 22px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--footer-bg) 30%, transparent);
+}
+.modal-card h3 {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.modal-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.modal-close:hover {
+  background: var(--section-1);
+  color: var(--text-primary);
+}
+
+/* ======================================================
+   Layout helpers
+   ====================================================== */
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.spread {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ======================================================
+   Text utilities
+   ====================================================== */
+.muted { color: var(--text-muted); }
+.small { font-size: 12px; }
+.tiny  { font-size: 11px; }
+.hidden { display: none !important; }
+
+/* ======================================================
+   Follow-up status pills (.fu-pill) — shared by Leads + Follow-up Portal
+   ──────────────────────────────────────────────────────
+   Per CONTACTS-ARCHITECTURE.md visual style contract. Both apps render the
+   same pill for the same status string so users see identical signals
+   wherever a contact is viewed.
+
+   Usage:
+     <span class="fu-pill fu-pill--{status}">{label}</span>
+   Where {status} is one of: queued | drafted | draft_gmail | sent |
+   replied | meeting | no_response | closed | dnc
+
+   Colours alias to the brand service palette (defined in brand.css) so a
+   theme swap (slate / earthy / nocturne) flows through automatically.
+   Hex fallbacks match the Sonor 10-service brand for apps loading this
+   file before brand.css has settled. The `--fu-*` token layer in any app's
+   `data/app-vars.css` (e.g. Follow-up Portal) is preserved — it just
+   re-exports the same brand aliases under a clearer name.
+   ====================================================== */
+.fu-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+  white-space: nowrap;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+}
+/* v0.7.1 — TRAFFIC-LIGHT scheme REGRADED + REVERSED. Per Bryn directive 2026-05-28.
+   Pipeline progress: queued=RED (cold start, needs action) → drafted=ORANGE →
+   draft_gmail=AMBER → no_response=YELLOW (waiting) → sent=LIME → replied=GREEN-LT
+   → meeting=GREEN (best outcome). closed/dnc = terminal-dark/grey.
+   Each status has its OWN distinct shade — no two pills are the same colour. */
+.fu-pill--queued        { background: var(--fu-queued,        #d63838); color: #fff; }
+.fu-pill--drafted       { background: var(--fu-drafted,       #e8731c); color: #fff; }
+.fu-pill--draft_gmail,
+.fu-pill--draft-gmail   { background: var(--fu-draft-gmail,   #e8a02c); color: #fff; }
+.fu-pill--no_response,
+.fu-pill--no-response   { background: var(--fu-no-response,   #d4a52e); color: #fff; }
+.fu-pill--sent          { background: var(--fu-sent,          #7caf2e); color: #fff; }
+.fu-pill--replied       { background: var(--fu-replied,       #4caf50); color: #fff; }
+.fu-pill--meeting       { background: var(--fu-meeting,       #2e8b3d); color: #fff; }
+.fu-pill--closed        { background: var(--fu-closed,        #2f2e2c); color: #fff; }
+.fu-pill--dnc           { background: var(--fu-dnc,           #8a8985); color: #fff; }
+
+/* Cold-call status pills (.cc-pill) — same family, separate axis.
+   Stored in contacts.metadata.followup.cold_call_status. */
+.cc-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+  white-space: nowrap;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+}
+.cc-pill--pending       { background: var(--cc-pending,   var(--silver, #b7b1a7)); color: #2C2218; }
+.cc-pill--called        { background: var(--cc-called,    var(--green,  #78ba57)); }
+.cc-pill--no_answer,
+.cc-pill--no-answer     { background: var(--cc-no-answer, var(--status-amber, #E0922F)); color: #2C2218; }   /* §23 amber, not the 04 yellow */
+.cc-pill--declined      { background: var(--cc-declined,  var(--red,    #ec6061)); }
+
+/* ── v0.8.0 (2026-09-28, B-478) UI KIT ADDITIONS — icons, popover menus, stage chips ───────────────────────────
+   .s-icon              — inline Lucide SVG from data/sonor-icons.js (16 px, currentColor); .s-icon-sm 14 / .s-icon-lg 20
+   .s-menu              — popover menu shell (absolute, below trigger); .s-menu-item rows; .s-menu-h section heading
+   .chip                — small rounded status chip; .chip-stage-{in-progress|sent|accepted|complete|cancelled|draft}
+                          = the WeQuote stage palette used by sonor-wq-bar.js / Takeoffs; .chip-warn / .chip-ok
+   .s-btn-mini          — tiny bordered action (▲▼ ↻ copy) — replaces per-app .wqp-mini / .swq-mini
+   All colours are tokens (--card/--border/--text/--surface + fixed semantic stage colours). Slate, never cream. */
+.s-icon { display: inline-block; vertical-align: -0.15em; flex: none; width: 16px; height: 16px; }
+.s-icon-sm { width: 14px; height: 14px; }
+.s-icon-lg { width: 20px; height: 20px; }
+button > .s-icon:first-child, .btn > .s-icon:first-child, a > .s-icon:first-child { margin-right: 6px; }
+.s-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 120; min-width: 240px; padding: 6px; border-radius: 8px;
+  background: var(--card, #fff); color: var(--text, var(--text-primary, #0F172A)); border: 1px solid var(--border, #CBD5E1);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .22); display: none; flex-direction: column; gap: 4px; font-size: 12px; }
+.s-menu.open { display: flex; }
+.s-menu-h { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .6; margin: 4px 2px 0; font-weight: 700; }
+.s-menu-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: 5px; border: 1px solid transparent;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.s-menu-item:hover { background: var(--surface, var(--tint, #F1F5F9)); border-color: var(--border, #CBD5E1); }
+.s-menu-item:disabled { opacity: .45; cursor: default; }
+.chip { display: inline-block; padding: 0 7px; border-radius: 9px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  line-height: 16px; color: #fff; background: #64748B; white-space: nowrap; }
+.chip-stage-in-progress, .chip-stage-in_progress { background: #2F6FD6; }
+.chip-stage-sent { background: #E8892B; }
+.chip-stage-accepted { background: #1F9D55; }
+.chip-stage-complete { background: #0F766E; }
+.chip-stage-cancelled, .chip-stage-declined { background: #B91C1C; }
+.chip-stage-draft { background: #64748B; }
+.chip-warn { background: #DC2626; }
+.chip-ok { background: #16A34A; }
+.s-btn-mini { padding: 1px 7px; font-size: 11px; line-height: 18px; border-radius: 4px; border: 1px solid var(--border, #CBD5E1);
+  background: var(--card, #fff); color: inherit; cursor: pointer; }
+.s-btn-mini:hover:not(:disabled) { border-color: var(--accent, #6b4a8a); }
+
+/* ── v0.9.0 (2026-09-29, B-478 phase 2) WQ MODAL KIT — the 🧾 WeQuote push / head end / spec check / proposal-copy ──
+   modals (Takeoffs data/sonor-takeoffs-wqpush.js) used to inject this as an inline <style> string; it now lives HERE so
+   every app that opens a SonorModal with these classes looks the same. Sizes / spacing / radii / motion come from the
+   brand scale tokens (dist/brand.css → --fs-* --sp-* --r-* --dur-*); status colours stay explicit (traffic lights are
+   semantic, not themed). `.wqp-wrap{--wqp-kit:1}` is the probe wqpush reads to know the kit is loaded.
+   Takeoffs loads this file with `@import url(...) layer(sonor-kit)` so its own unlayered rules always win on a clash. */
+.wqp-wrap { --wqp-kit: 1; min-width: min(900px, 94vw); font-size: var(--fs-md, 13px); display: flex; flex-direction: column; gap: var(--sp-2, 8px); }
+.wqp-row { display: flex; gap: var(--sp-2, 8px); align-items: center; flex-wrap: wrap; }
+.wqp-row select { font: inherit; padding: var(--sp-1, 4px) 6px; max-width: 520px; }
+.wqp-tbl { width: 100%; border-collapse: collapse; max-height: 44vh; display: block; overflow: auto; }
+.wqp-tbl th, .wqp-tbl td { padding: var(--sp-1, 4px) 6px; border-bottom: 1px solid var(--border, #CBD5E1); text-align: left; white-space: nowrap; }
+.wqp-tbl.wqp-he { max-height: 58vh; }
+.wqp-bad { color: #a33; } .wqp-ok { color: #1F9D55; } .wqp-note { opacity: .8; } .wqp-warn { color: var(--status-amber, #E8A317); font-weight: 600; }
+.wqp-tot { padding: var(--sp-2, 8px) 10px; border-radius: var(--r-lg, 8px); background: var(--tint, var(--surface, #E2E8F0)); }
+.wqp-sub { font-size: var(--fs-2xs, 10px); opacity: .75; }
+.wqp-room { background: var(--tint, var(--surface, #E2E8F0)); font-weight: 700; }
+.wqp-kind { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; padding: 1px 5px; border-radius: var(--r-xs, 3px); }
+.wqp-kind-device { background: var(--purple, #8058a1); } .wqp-kind-firstfix { background: var(--charcoal, #302f2e); } .wqp-kind-counter { background: var(--aqua, #4bb9d3); }
+.wqp-kind-wq { background: #9aa0a8; } .wqp-kind-manual, .wqp-kind-custom { background: var(--accent, #2d718b); }
+.wqp-kind-derived { background: #e8892b; } .wqp-kind-engineered { background: #1f9d55; } .wqp-kind-estimate { background: var(--terracotta, #e37c59); } .wqp-kind-scaffold { background: var(--gold, #ad9978); }
+.wqp-g td { background: #eef0f3; font-weight: 700; padding: 6px 8px; border-top: 2px solid #d9dde3; }
+.wqp-a td { background: #f7f8fa; font-weight: 600; padding: 4px 8px 4px 18px; }
+.wqp-r td:first-child { width: 22px; text-align: center; } .wqp-r td:nth-child(3) { padding-left: 26px; }
+.wqp-excl td { color: #9aa0a8; text-decoration: line-through; } .wqp-excl td:first-child, .wqp-excl td:nth-child(6) { text-decoration: none; }
+.wqp-wq td { color: #6b7280; font-style: italic; } .wqp-dim td { color: #8a8f98; }
+.wqp-st { display: inline-block; padding: 0 6px; border-radius: 8px; font-size: var(--fs-2xs, 10px); font-weight: 700; letter-spacing: .03em; text-transform: uppercase; line-height: 16px; }
+.wqp-st-new { background: #1f9d55; color: #fff; } .wqp-st-on { background: #2f6fd6; color: #fff; } .wqp-st-wq { background: #e5e7eb; color: #374151; } .wqp-st-dim { background: #f3f4f6; color: #9aa0a8; }
+.wqp-st-bad { background: #fde8e8; color: #8a1f1f; } .wqp-st-move { background: #e8892b; color: #fff; } .wqp-st-edit, .wqp-st-manual { background: var(--accent, #2d718b); color: var(--cta-text, #fff); } .wqp-st-eng { background: #1f9d55; color: #fff; } .wqp-st-est { background: #e8892b; color: #fff; }
+.wqp-mini { padding: 0 6px; font-size: var(--fs-xs, 11px); line-height: 16px; border: 1px solid var(--border, #CBD5E1); background: var(--card, #fff); border-radius: var(--r-xs, 3px); cursor: pointer; color: inherit; }
+.wqp-mv { white-space: nowrap; }
+.wqp-lay select, .wqp-lay input[type=number] { font-size: var(--fs-xs, 11px); padding: 1px 3px; border: 1px solid var(--border, #CBD5E1); border-radius: var(--r-xs, 3px); background: var(--card, #fff); color: inherit; max-width: 150px; }
+.wqp-lay td:nth-child(3) { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wqp-lay input.wqp-edited { border-color: var(--accent, #2d718b); }
+.wqp-todo { padding: var(--sp-2, 8px) 10px; border-radius: var(--r-lg, 8px); background: #fff7ed; border: 1px solid #fed7aa; font-size: var(--fs-sm, 12px); }
+.wqp-todo ol { margin: 4px 0 0 18px; } .wqp-todo li { margin: 2px 0; }
+.wqp-pick { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; padding: 2px 7px; border: 1px solid var(--border, #CBD5E1); border-radius: var(--r-sm, 4px); background: var(--card, #fff); color: inherit; cursor: pointer; font-size: var(--fs-sm, 12px); }
+.wqp-pick-none { color: #9aa0a8; font-style: italic; } .wqp-pick:hover:not(:disabled) { border-color: var(--accent, #2d718b); }
+.wqp-he input { font-size: var(--fs-sm, 12px); padding: 2px 5px; border: 1px solid var(--border, #CBD5E1); border-radius: var(--r-sm, 4px); background: var(--card, #fff); color: inherit; }
+.wqp-he tr.wqp-manual td:nth-child(2) { color: var(--accent, #2d718b); }
+.wqp-viewbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.wqp-metrics { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 6px 0 10px; }
+.wqp-metric { font-size: var(--fs-xs, 11px); color: var(--text-muted, #555); } .wqp-metric b { font-size: var(--fs-md, 13px); color: var(--text-primary, #111); }
+.wqp-spec-row { padding: 5px 8px; border-radius: 5px; margin: 3px 0; background: var(--surface, #F1F5F9); font-size: var(--fs-sm, 12px); }
+.wqp-spec-row.miss { background: #FEE2E2; } .wqp-spec-row.diff { background: #FFEDD5; } .wqp-spec-head { font-weight: 700; margin: 6px 0; }
+.wqp-pushlog { margin: 8px 0; padding: 8px 10px; border-radius: var(--r-lg, 8px); background: #0F172A; color: #E2E8F0; font: 11px/1.5 var(--font-mono, ui-monospace, Menlo, monospace); max-height: 180px; overflow: auto; white-space: pre-wrap; display: none; }
+.wqp-pushlog.on { display: block; }
+.wqp-pushbar { height: 4px; border-radius: 2px; background: #1E293B; margin: 6px 0 0; overflow: hidden; } .wqp-pushbar i { display: block; height: 100%; width: 0; background: #22C55E; transition: width var(--dur-slow, 300ms) var(--ease, ease); }
+.wqp-lock { font-size: var(--fs-xs, 11px); font-weight: 700; padding: 2px 8px; border-radius: 10px; background: var(--tint, var(--surface, #E2E8F0)); } .wqp-lock-on { background: #fde8e8; color: #8a1f1f; }
+.wqp-btn { font: inherit; padding: var(--sp-1, 4px) 8px; border-radius: var(--r-md, 6px); border: 1px solid var(--border, #cfd6dd); background: var(--card, #fff); cursor: pointer; }
+
+/* ── v0.9.0 (2026-09-29, B-479) SKELETON · EMPTY STATE · MOTION on the brand tokens ────────────────────────────── */
+.s-skeleton { display: block; border-radius: var(--r-sm, 4px); background: linear-gradient(90deg, var(--surface, #E2E8F0) 25%, var(--card, #fff) 50%, var(--surface, #E2E8F0) 75%); background-size: 200% 100%; animation: s-shimmer 1.2s var(--ease, ease) infinite; min-height: 1em; }
+.s-skeleton-text { height: .85em; margin: .35em 0; } .s-skeleton-text.w-60 { width: 60%; } .s-skeleton-text.w-40 { width: 40%; } .s-skeleton-text.w-80 { width: 80%; }
+.s-skeleton-row { height: 28px; margin: 6px 0; } .s-skeleton-card { height: 96px; border-radius: var(--r-lg, 8px); }
+@keyframes s-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.s-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2, 8px); padding: var(--sp-8, 32px) var(--sp-4, 16px); text-align: center; color: var(--text-muted, #64748B); border: 1px dashed var(--border, #CBD5E1); border-radius: var(--r-xl, 12px); font-size: var(--fs-md, 13px); }
+.s-empty .s-icon { width: 28px; height: 28px; opacity: .55; } .s-empty b { color: var(--text-primary, #0F172A); font-size: var(--fs-base, 14px); }
+.s-empty .s-empty-cta { margin-top: var(--sp-1, 4px); }
+.s-fade-in { animation: s-fade var(--dur, 200ms) var(--ease, ease) both; } .s-rise-in { animation: s-rise var(--dur, 200ms) var(--ease, ease) both; }
+@keyframes s-fade { from { opacity: 0; } to { opacity: 1; } } @keyframes s-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.s-menu, .sonor-modal { animation: s-rise var(--dur-fast, 120ms) var(--ease, ease) both; }
+@media (prefers-reduced-motion: reduce) { .s-skeleton, .s-fade-in, .s-rise-in, .s-menu, .sonor-modal { animation: none; } }
+
+/* ── v0.10.0 (2026-09-29, B-487) GRAPHITE — the back-end dark theme. Kit chrome reads brand tokens; these lines give
+   the kit its app-vocabulary aliases (apps that define their own win — this file sits in the sonor-kit layer) and
+   re-tint the few fixed light surfaces for [data-theme='graphite']. Service colours untouched. ────────────────────── */
+:root { --card: var(--bg-1, #fff); --surface: var(--bg-2, #F1F5F9); --tint: var(--bg-3, #E2E8F0); --line: var(--border, #CBD5E1); --text: var(--text-primary, #0F172A); --muted: var(--text-muted, #64748B); }
+[data-theme='graphite'] { color-scheme: dark; }
+[data-theme='graphite'] .wqp-g td { background: #2C2C2E; border-top-color: #48484A; }
+[data-theme='graphite'] .wqp-a td { background: #242426; }
+[data-theme='graphite'] .wqp-todo { background: rgba(232,137,43,.12); border-color: rgba(232,137,43,.4); }
+[data-theme='graphite'] .wqp-st-wq { background: #3A3A3C; color: #E5E5EA; } [data-theme='graphite'] .wqp-st-dim { background: #2C2C2E; color: #98989D; } [data-theme='graphite'] .wqp-st-bad { background: rgba(220,38,38,.2); color: #FCA5A5; }
+[data-theme='graphite'] .wqp-spec-row.miss { background: rgba(220,38,38,.18); } [data-theme='graphite'] .wqp-spec-row.diff { background: rgba(232,137,43,.18); }
+[data-theme='graphite'] .wqp-metric { color: #C7C7CC; } [data-theme='graphite'] .wqp-metric b { color: #F5F5F7; }
+/* 2026-10-12 — WQ / Head end modals on graphite: grey hairlines, never white (Bryn: "everything looks too highly contrasted with
+   white as the border, keep it grey tones … make it tight"). Fields sit on the card shade with a 10% border; rows 6%. */
+[data-theme='graphite'] .wqp-wrap select, [data-theme='graphite'] .wqp-wrap input, [data-theme='graphite'] .wqp-pick, [data-theme='graphite'] .wqp-mini,
+[data-theme='graphite'] .wqp-lay select, [data-theme='graphite'] .wqp-lay input[type=number], [data-theme='graphite'] .wqp-he input { background: #1C1C1E !important; border: 1px solid rgba(255,255,255,.10) !important; color: #E5E5EA; border-radius: 4px; }   /* !important: this file sits in the lower sonor-kit layer and apps style bare select/input */
+[data-theme='graphite'] .wqp-wrap select:hover, [data-theme='graphite'] .wqp-pick:hover:not(:disabled), [data-theme='graphite'] .wqp-he input:focus { border-color: rgba(255,255,255,.22); outline: none; }
+[data-theme='graphite'] .wqp-tbl th, [data-theme='graphite'] .wqp-tbl td { border-bottom: 1px solid rgba(255,255,255,.06) !important; }
+.wqp-review table td, .wqp-review table th { padding: 3px 10px !important; vertical-align: top; }
+[data-theme='graphite'] .wqp-tbl th { color: #98989D; font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
+[data-theme='graphite'] .wqp-tot { background: #242426; }
+[data-theme='graphite'] .wqp-pick-none { color: #6E6E73; }
+.wqp-he td { padding: 2px 5px; font-size: 11.5px; } .wqp-he input { padding: 1px 4px; }
+.wqp-wrap .wqp-row { gap: 4px 10px; }
+[data-theme='graphite'] .swq-slot { background: #3A3A3C; color: #E5E5EA; }
+[data-theme='graphite'] .s-skeleton { background: linear-gradient(90deg, #2C2C2E 25%, #3A3A3C 50%, #2C2C2E 75%); background-size: 200% 100%; }
+[data-theme='graphite'] .pill, [data-theme='graphite'] .badge { border-color: rgba(255,255,255,.14); }
+[data-theme='graphite'] input, [data-theme='graphite'] select, [data-theme='graphite'] textarea { color-scheme: dark; }
+
+/* CSV import/export is retired (Bryn 2026-09-29, sonor-platform §4): controls stay in the code, never on screen.
+   `hidden` alone loses to display:flex on .btn, so this wins outright. */
+[data-csv-tool] { display: none !important; }
+
+/* ── BAR LADDER (Bryn 2026-09-29: "everything below the main header should be dark mode, 2nd, 3rd headers etc slightly
+   different shades — get it right everywhere"). Row 1 = the shared header chrome (--nav-chrome-*). Every bar under it
+   takes the next step of the ladder: --bar-2 tabs · --bar-3 sub-tabs / project bar · --bar-4 filter / stats / toolbar.
+   Apps use the tokens (or .s-bar-2/3/4) and never invent a bar colour. In slate the ladder steps the light greys. ── */
+:root { --bar-1: var(--nav-chrome-deep, #0a1929); --bar-2: var(--bg-1, #DDE1E7); --bar-3: var(--bg-0, #D1D6DD); --bar-4: var(--bg-2, #C8CFD7); --bar-line: var(--border, rgba(20,30,50,.10)); }
+[data-theme='graphite'], [data-theme='dark'], [data-theme='nocturne'] { --bar-2: #1C1C1E; --bar-3: #242426; --bar-4: #2C2C2E; --bar-line: rgba(255,255,255,.08); }   /* v0.17.1: legacy dark names step the dark ladder too — never a light bar on a dark page */
+.s-bar-2 { background: var(--bar-2); border-bottom: 1px solid var(--bar-line); }
+.s-bar-3 { background: var(--bar-3); border-bottom: 1px solid var(--bar-line); }
+.s-bar-4 { background: var(--bar-4); border-bottom: 1px solid var(--bar-line); }
+[data-theme='graphite'] .tab-bar { background: var(--bar-2); border-bottom: 1px solid var(--bar-line); }
+
+/* ── SERVICE COLOUR AS INK (sonor-platform §12): a service/category colour used as TEXT on a tint is mixed towards the
+   theme's ink so dark services (10 Infrastructure #302f2e, 09 #b7b1a7) stay readable. Use color-mix(in srgb, <hex> 70%, var(--ink-mix)). ── */
+:root { --ink-mix: #0F172A; --ink-on-bright: #0B1A22; }   /* ink for text sitting ON a bright service fill (aqua, green, yellow) — never white */
+[data-theme='graphite'] { --ink-mix: #FFFFFF; }
+
+/* ── SEMANTIC PILLS (sonor-platform §15): give it a colour, it works in every theme. No app writes pill CSS again.
+     <span class="s-pill" style="--c:#8058a1">01 Cinema</span>       tinted pill, ink mixed to the theme ink
+     <span class="s-pill s-pill-solid" style="--c:#4bb9d3">LIVE</span> solid fill, ink picked for a bright/deep fill via --c-l (0/1)
+     <span class="s-pill s-pill-status" data-tone="ok|warn|bad|info"> semantic tones (service-independent)                     ── */
+.s-pill { --c: var(--accent); display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; line-height: 16px; white-space: nowrap;
+  background: color-mix(in srgb, var(--c) 16%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--ink-mix)); }
+.s-pill-solid { background: var(--c); border-color: var(--c); color: var(--ink-on-bright); }
+.s-pill-solid[data-deep] { color: #fff; }
+.s-pill-status[data-tone="ok"]   { --c: #22C55E; } .s-pill-status[data-tone="warn"] { --c: #E8892B; }
+.s-pill-status[data-tone="bad"]  { --c: #DC2626; } .s-pill-status[data-tone="info"] { --c: #4bb9d3; } .s-pill-status[data-tone="dim"] { --c: #98989D; }
+
+/* ── WEQUOTE-LINKED MARK (2026-10-17 — Bryn: "a small wq in their swatch of almost red … a pill bubble against items that are wq linked").
+     ONE mark everywhere something is linked to WeQuote (project, quote, product, customer contact, tick-list line):
+     <span class="wq-pill" title="WeQuote quote #2791">WQ</span>   ·   <a class="wq-pill" href="…" target="_blank">WQ</a>
+     .wq-off = could be linked but is not yet (outline). WeQuote brand red is a THIRD-PARTY mark, not a Sonor token; white on it = 3.35:1.
+     JS helper: SonorWQClient.pill({ title, href, off }). ── */
+:root { --wq: #ff4655; }
+.wq-pill { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 20px; height: 14px; padding: 0 5px; border-radius: 999px; background: var(--wq); border: 1px solid var(--wq); color: #fff; font: 700 9px/12px 'DM Sans', system-ui, sans-serif; letter-spacing: .06em; vertical-align: middle; text-decoration: none; white-space: nowrap; cursor: default; }
+a.wq-pill { cursor: pointer; } a.wq-pill:hover { filter: brightness(1.08); box-shadow: 0 0 8px color-mix(in srgb, var(--wq) 50%, transparent); }
+.wq-pill.wq-off { background: transparent; color: var(--wq); border-color: color-mix(in srgb, var(--wq) 55%, transparent); }
+@media print { .wq-pill { background: none; color: #ff4655; } }
+.s-pill .s-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* ── PAPER (sonor-platform §11, 2026-09-29): a DOCUMENT preview — pack page, PDF cover, print sheet — is a sheet of paper in
+   every theme. It re-declares the ink/surface tokens locally so the app's components render on it unchanged. ── */
+.s-paper { --text-primary: #15202D; --text-secondary: #3A4553; --text-muted: #5A6472; --text-faint: #A0A8B2; --border: rgba(20,30,50,.12); --border-strong: rgba(20,30,50,.22);
+  --card: #FFFFFF; --surface: #F1F5F9; --tint: #E2E8F0; --ink-mix: #0F172A; --ink-on-bright: #0B1A22; --bg-0: #FFFFFF; --bg-1: #FFFFFF; --bg-2: #F1F5F9; --bg-3: #E2E8F0; --body: #FFFFFF; --text: #15202D; --muted: #5A6472; --line: rgba(20,30,50,.12);
+  background: #FFFFFF; color: #15202D; color-scheme: light; box-shadow: 0 1px 2px rgba(0,0,0,.25), 0 12px 32px rgba(0,0,0,.35); }
+[data-theme='graphite'] .s-paper { border-color: rgba(0,0,0,.2); }
+
+/* ── LOCKED = RED, everywhere (Bryn 2026-09-29: "locks should go red on layers when locked, and throughout everywhere").
+   Any lock control in its locked state — layers, columns, project bar, theme lock — takes --lock (service-06 red).
+   Opt in with .lock-btn.locked, .s-lock[aria-pressed=true] or [data-locked=true]; unlocked stays muted. ── */
+:root { --lock: #ec6061; --lock-ink: #fff; }
+.lock-btn.locked, .s-lock[aria-pressed="true"], [data-locked="true"] { background: var(--lock) !important; color: var(--lock-ink) !important; border-color: var(--lock) !important; box-shadow: 0 0 0 1px color-mix(in srgb, var(--lock) 35%, transparent); }
+.lock-btn.locked svg, .s-lock[aria-pressed="true"] svg { stroke: var(--lock-ink); }
+[data-theme='graphite'] :is(.lock-btn.locked, .s-lock[aria-pressed="true"], [data-locked="true"]) { box-shadow: 0 0 0 1px rgba(236,96,97,.35), 0 0 8px rgba(236,96,97,.25); }
+
+/* ── SORTABLE (sonor-sortable.js, B-491): ordering is a drag, never a typed number. ── */
+.s-drag { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 22px; padding: 0; margin-right: 4px; border: 0; border-radius: 4px; background: transparent; color: var(--text-muted, #98989D); cursor: grab; touch-action: none; opacity: .55; vertical-align: middle; }
+.s-drag:hover, .s-drag:focus-visible { opacity: 1; background: var(--surface-hover, rgba(255,255,255,.08)); color: var(--text-primary); outline: none; }
+.s-drag:active { cursor: grabbing; }
+.s-dragging { opacity: .35; }
+.s-dropped { animation: s-dropped .6s var(--ease, ease); }
+@keyframes s-dropped { from { background-color: color-mix(in srgb, var(--s02, #4bb9d3) 28%, transparent); } to { background-color: transparent; } }
+.s-drag-ghost, .s-drag-ghost-table { background: var(--card, #2C2C2E); color: var(--text-primary); border: 1px solid var(--border-strong, rgba(255,255,255,.18)); border-radius: 6px; border-collapse: separate; }
+.s-drag-ghost-table td { padding: 4px 6px; white-space: nowrap; }
+body.s-sorting { user-select: none; cursor: grabbing; }
+body.s-sorting * { cursor: grabbing !important; }
+[data-sort-input] { display: none !important; }
+
+/* ══ §18 HOVER / FOCUS LAW (sonor-platform, 2026-09-29 23:00 — Bryn: "same jazziness for mouse overs etc") ══
+   ONE interaction language for every control in every app:
+   · hover  = a quiet wash (7% of the ink over the surface) + border to --border-strong; filled controls brighten 8%
+   · active = 12% wash        · focus-visible = 2px accent ring (keyboard only)        · disabled = 55% opacity, no hover
+   · motion = 120 ms ease on colour/border/shadow only — NO translateY lifts, NO opacity flicker, NO scale, NO per-app glow.
+   Apps get this for free on <button>, [role=button], .btn*, .ctrl-btn, .f-btn, .s-btn-mini, .app-card, .snap-card, .card-link,
+   .s-menu-item, .tab-bar > button, .table tr / tr[data-id]. Inline onmouseover/onmouseout handlers are banned. */
+:root { --hover-wash: color-mix(in srgb, var(--text-primary) 7%, transparent); --active-wash: color-mix(in srgb, var(--text-primary) 12%, transparent); --motion: 120ms ease; --focus-ring: var(--accent); }
+button, [role="button"], .btn, .ctrl-btn, .f-btn, .s-btn-mini, .app-card, .snap-card, .card-link, .s-menu-item, .tab-bar > button, .tab-bar .tab-btn, .sidebar-nav > button {
+  transition: background-color var(--motion), border-color var(--motion), color var(--motion), box-shadow var(--motion);
+  transform: none;
+}
+button:not(:disabled):not(.tab-btn):not(.btn-primary):not(.f-btn.on):hover, [role="button"]:not([aria-disabled="true"]):hover, .btn:not(.btn-primary):hover, .ctrl-btn:not(:disabled):hover, .s-btn-mini:not(:disabled):hover, .card-link:hover, .s-menu-item:hover {
+  background-color: var(--hover-wash); border-color: var(--border-strong);
+}
+.btn-primary:hover, .f-btn.on:hover, button.primary:hover { filter: brightness(1.08); }
+button:not(:disabled):active, [role="button"]:active, .btn:active, .ctrl-btn:active, .s-btn-mini:active { background-color: var(--active-wash); transform: none; }
+.app-card:hover, .snap-card:hover { border-color: var(--border-strong); box-shadow: 0 4px 16px rgba(0,0,0,.25); transform: none; }
+.table tr:hover td, tr[data-id]:hover td { background-color: var(--hover-wash); }
+button:disabled, [aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+:where(button, [role="button"], a, input, select, textarea, [tabindex]):focus { outline: none; }
+:where(button, [role="button"], a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { :root { --motion: 0ms; } }
+
+/* ── CATALOGUE PICKER (<sonor-catalogue-picker>, B-504): the ONE categorised "add from the Library" menu ── */
+.s-cat-picker { display: flex; flex-direction: column; width: 360px; max-height: 70vh; background: var(--card); color: var(--text-primary); border: 1px solid var(--border-strong); border-radius: var(--r-lg, 10px); box-shadow: var(--shadow-lg, 0 16px 40px rgba(0,0,0,.45)); overflow: hidden; font: 12px/1.4 var(--font-ui, 'DM Sans', system-ui, sans-serif); }
+.s-cp-head { display: flex; align-items: center; gap: 6px; padding: 8px; border-bottom: 1px solid var(--border); background: var(--bar-4); flex-wrap: wrap; }
+.s-cp-tabs { display: flex; gap: 2px; width: 100%; }
+.s-cp-tab { flex: 1; padding: 5px 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--text-muted); font: inherit; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.s-cp-tab.active { background: var(--card); color: var(--text-primary); border-color: var(--border); }
+.s-cp-search { flex: 1; min-width: 0; padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text-primary); font: inherit; }
+.s-cp-search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+.s-cp-x { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 16px; line-height: 1; }
+.s-cp-x:hover { color: var(--text-primary); background: var(--surface-hover); }
+.s-cp-hint { padding: 5px 10px; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.s-cp-body { overflow: auto; flex: 1; padding: 4px 0 6px; }
+.s-cp-svc { margin: 4px 0 2px; }
+.s-cp-svc-h { display: flex; align-items: center; gap: 8px; margin: 0; padding: 6px 10px 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); position: sticky; top: 0; background: var(--card); z-index: 1; }
+.s-cp-bar { width: 4px; height: 14px; border-radius: 2px; background: var(--c); }
+.s-cp-n { margin-left: auto; font-size: 10px; font-weight: 600; color: var(--text-faint); font-family: var(--font-mono, monospace); }
+.s-cp-cat-h { display: flex; align-items: center; gap: 6px; width: 100%; padding: 4px 10px 4px 18px; border: 0; background: transparent; color: var(--text-primary); font: inherit; font-weight: 600; cursor: pointer; text-align: left; }
+.s-cp-cat-h:hover { background: var(--surface-hover); }
+.s-cp-chev { width: 0; height: 0; border-left: 4px solid var(--text-faint); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform var(--dur-fast, 120ms) var(--ease, ease); }
+.s-cp-cat.open > .s-cp-cat-h .s-cp-chev { transform: rotate(90deg); }
+.s-cp-items { display: flex; flex-direction: column; padding: 0 6px 4px 22px; }
+.s-cp-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: grab; touch-action: none; transition: background var(--dur-fast, 120ms) var(--ease, ease), transform var(--dur-fast, 120ms) var(--ease, ease); }
+.s-cp-item:hover, .s-cp-item.cur { background: var(--surface-hover); border-color: var(--border); }   /* v0.19.1 (§18): no nudge — colour / border only */
+.s-cp-item:active { cursor: grabbing; }
+.s-cp-sw { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.s-cp-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.s-cp-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-cp-meta { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-cp-u { font-family: var(--font-mono, monospace); font-size: 10.5px; font-weight: 700; color: var(--text-secondary); background: var(--tint); padding: 1px 6px; border-radius: 4px; flex: none; }
+.s-cp-empty { padding: 26px 12px; text-align: center; color: var(--text-muted); }
+.s-cp-foot { display: flex; align-items: center; gap: 4px; padding: 6px 10px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--text-muted); background: var(--bar-3); }
+.s-cp-link { border: 0; background: none; color: var(--accent); font: inherit; cursor: pointer; padding: 0; }
+.s-cat-picker[compact] { width: 300px; } .s-cat-picker[compact] .s-cp-item { padding: 3px 6px; }
+
+/* ── RACK VIEW (<sonor-rack-view>, RACKS-SSOT): read-only engineered racks for PM / Packs / PDFs ── */
+.s-rack-view { display: block; color: var(--text-primary); font: 12.5px/1.45 var(--font-ui, 'DM Sans', system-ui, sans-serif); }
+.s-rack-view .rv-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.s-rack-view .rv-meta { color: var(--text-muted); font-size: 11px; flex: 1; }
+.s-rack-view .rv-edit { text-decoration: none; }
+.s-rack-view .rv-empty { padding: 26px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg, 10px); color: var(--text-muted); text-align: center; line-height: 1.7; }
+.s-rack-view .rv-empty .rv-edit { margin-top: 10px; display: inline-flex; }
+.s-rack-view .rv-rack { margin: 0 0 22px; }
+.s-rack-view .rv-rack h4 { margin: 0 0 8px; font-size: 13px; }
+.s-rack-view .rv-n { color: var(--text-muted); font-weight: 500; font-size: 11px; }
+.s-rack-view .rv-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 6px; margin: 0 0 10px; }
+.s-rack-view .rv-tile { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
+.s-rack-view .rv-l { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+.s-rack-view .rv-v { font: 700 16px/1.2 var(--font-mono, monospace); } .s-rack-view .rv-v small { font-size: 10px; margin-left: 3px; color: var(--text-muted); font-weight: 500; }
+.s-rack-view .rv-s { font-size: 10.5px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-rack-view .rv-warn { margin: 0 0 10px; padding-left: 18px; font-size: 11.5px; } .s-rack-view .rv-warn li[data-level="error"] { color: #F87171; } .s-rack-view .rv-warn li[data-level="warn"] { color: #FBBF24; }
+.s-rack-view .rv-sides { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+.s-rack-view .rv-side-h { font-size: 10px; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 4px; }
+.s-rack-view .rv-patch { margin-top: 14px; } .s-rack-view .rv-patch h5 { margin: 0 0 6px; font-size: 12px; }
+.s-rack-view .rv-ports { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 3px; }
+.s-rack-view .rv-port { display: flex; flex-direction: column; padding: 3px 5px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); font-size: 10px; min-height: 30px; }
+.s-rack-view .rv-port b { font-family: var(--font-mono, monospace); color: var(--text-muted); } .s-rack-view .rv-port.on { border-color: var(--accent); } .s-rack-view .rv-port span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media print { .s-rack-view .rv-edit { display: none; } }

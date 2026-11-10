@@ -1,0 +1,92 @@
+/* Sonor Quick Job — built-in recipe template (v0.1.0 · 2026-11-10)
+   The live copy lives in estimate_templates (kind 'quick-job'); the app uses the table copy only when its version is at least
+   this one (sonor-platform §6 "built-in templates win when newer"). Edit the TABLE row to change recipes without a release.
+
+   A recipe = a small job (TV install, CCTV maintenance …). Questions → inputs; every line is a REAL WeQuote product (wq_product_id).
+   WeQuote is the price SSOT: lines carry no price — WeQuote applies its catalogue sell on add.
+     question  { key, label, type: 'choice' | 'number' | 'bool', options: [{ value, label }], default, min, max, hint }
+               a choice question also sets <key>_<value> = 1 for the picked option (so a line can say  when: 'bracket_flat')
+     line      { wq_product_id, label?, qty: expr (default 1), when: expr, check?: 'note shown until Bryn confirms', bundle?: true }
+   Expressions = SonorEstimate.evalQty (numbers, + − × ÷, ?:, comparisons, ceil/floor/round/max/min).
+   `check` marks a number Bryn still has to confirm (recipes v0.1 were drafted from the WeQuote catalogue + usage, 2026-11-10). */
+(function () {
+  var T = (window.__SONOR_ESTIMATE_TEMPLATES__ = window.__SONOR_ESTIMATE_TEMPLATES__ || {});
+  T['quick-job'] = {
+    kind: 'quick-job', version: '0.1.0', title: 'Quick job',
+    job: {
+      questions: [
+        { key: 'travel', label: 'Fuel & travel', type: 'choice', default: 'none', options: [
+          { value: 'none', label: 'None' }, { value: 'r10', label: '10 miles' }, { value: 'r30', label: '30 miles' }, { value: 'r50', label: '50 miles' }] },
+        { key: 'days', label: 'Days on site', type: 'number', default: 1, min: 1, max: 10, when: '!travel_none' }
+      ],
+      lines: [
+        { wq_product_id: 324963, label: 'Fuel & Travel Surcharge (10 mile radius)', qty: 'days', when: 'travel_r10' },
+        { wq_product_id: 324964, label: 'Fuel & Travel Surcharge (30 mile radius)', qty: 'days', when: 'travel_r30' },
+        { wq_product_id: 324965, label: 'Fuel & Travel Surcharge (50 mile radius)', qty: 'days', when: 'travel_r50' }
+      ]
+    },
+    recipes: [
+      { key: 'tv-install', title: 'TV install', icon: '📺', service_nn: '02', blurb: 'Mount, connect and set up a TV',
+        questions: [
+          { key: 'bracket', label: 'Bracket', type: 'choice', default: 'flat', options: [
+            { value: 'flat', label: 'Flat' }, { value: 'tilt', label: 'Tilt' }, { value: 'm55', label: 'Motion ≤ 55"' },
+            { value: 'm56', label: 'Motion > 55"' }, { value: 'm80', label: 'Motion > 80"' }, { value: 'frame', label: 'The Frame' }] },
+          { key: 'tvs', label: 'TVs', type: 'number', default: 1, min: 1, max: 12 }
+        ],
+        lines: [
+          { wq_product_id: 877553, label: 'Smart TV Installation & Commissioning (Flat)', qty: 'tvs', when: 'bracket_flat' },
+          { wq_product_id: 878553, label: 'Smart TV Installation & Commissioning (Tilt)', qty: 'tvs', when: 'bracket_tilt' },
+          { wq_product_id: 878554, label: 'Smart TV Installation & Commissioning (Motion up to 55")', qty: 'tvs', when: 'bracket_m55' },
+          { wq_product_id: 878555, label: 'Smart TV Installation & Commissioning (Motion over 55")', qty: 'tvs', when: 'bracket_m56' },
+          { wq_product_id: 1023015, label: 'Smart TV Installation & Commissioning (Motion over 80")', qty: 'tvs', when: 'bracket_m80' },
+          { wq_product_id: 1389398, label: 'Smart TV Installation & Commissioning (The Frame)', qty: 'tvs', when: 'bracket_frame' }
+        ] },
+      { key: 'cctv-maintenance', title: 'CCTV maintenance', icon: '🛠', service_nn: '08', blurb: 'Clean, check and update an existing system',
+        questions: [
+          { key: 'cameras', label: 'Cameras', type: 'number', default: 4, min: 1, max: 64 },
+          { key: 'drive', label: 'NVR drive', type: 'choice', default: 'keep', options: [
+            { value: 'keep', label: 'Keep' }, { value: 'd4', label: 'Replace 4TB' }, { value: 'd8', label: 'Replace 8TB' }] },
+          { key: 'sd', label: 'SD cards (64GB)', type: 'number', default: 0, min: 0, max: 64 }
+        ],
+        lines: [
+          { wq_product_id: 904108, label: 'On-site Maintenance – CCTV', qty: 'ceil(1 + cameras * 0.25)', check: 'Hours = 1 + 15 min per camera — confirm the labour per camera and the visit product (old On-site Maintenance or the new SON-SC visit)' },
+          { wq_product_id: 644165, label: 'CCTV NVR Hard Drive 4TB', when: 'drive_d4' },
+          { wq_product_id: 644166, label: 'CCTV NVR Hard Drive 8TB', when: 'drive_d8' },
+          { wq_product_id: 882182, label: 'Class 10 SD Card for CCTV Camera – 64GB', qty: 'sd', when: 'sd > 0' }
+        ] },
+      { key: 'add-camera', title: 'Add a camera', icon: '📷', service_nn: '08', blurb: 'New camera onto an existing NVR',
+        questions: [
+          { key: 'res', label: 'Camera', type: 'choice', default: 'mp4', options: [{ value: 'mp4', label: 'ColorVu 4MP' }, { value: 'mp8', label: 'ColorVu 8MP' }] },
+          { key: 'n', label: 'Cameras', type: 'number', default: 1, min: 1, max: 32 },
+          { key: 'sd', label: 'SD card in camera', type: 'bool', default: false }
+        ],
+        lines: [
+          { wq_product_id: 490386, label: 'Hikvision ColorVu Fixed Turret 4MP', qty: 'n', when: 'res_mp4' },
+          { wq_product_id: 490387, label: 'Hikvision ColorVu Fixed Turret 8MP', qty: 'n', when: 'res_mp8' },
+          { wq_product_id: 1192632, label: '1st Fix Cabling – CCTV Camera', qty: 'n' },
+          { wq_product_id: 882182, label: 'Class 10 SD Card for CCTV Camera – 64GB', qty: 'n', when: 'sd' },
+          { wq_product_id: 485857, label: 'Hik-Connect CCTV App (FOC)' }
+        ] },
+      { key: 'wifi-top-up', title: 'WiFi top-up', icon: '📶', service_nn: '09', blurb: 'Add access points to an existing network',
+        questions: [
+          { key: 'aps', label: 'Indoor APs', type: 'number', default: 1, min: 0, max: 24 },
+          { key: 'ext', label: 'Outdoor APs', type: 'number', default: 0, min: 0, max: 12 }
+        ],
+        lines: [
+          { wq_product_id: 1271967, label: 'Internal WiFi Access Point', qty: 'aps', when: 'aps > 0', bundle: true },
+          { wq_product_id: 1271968, label: 'External WiFi Access Point', qty: 'ext', when: 'ext > 0', bundle: true },
+          { wq_product_id: 3262689, label: '1st Fix Cabling – WiFi (Ceiling Mount) – Cat6A', qty: 'aps + ext', when: 'aps + ext > 0' }
+        ] },
+      { key: 'callout', title: 'Call-out / fault', icon: '🔧', service_nn: null, blurb: 'Standard call-out, first hour plus extra hours',
+        questions: [{ key: 'hours', label: 'Hours on site', type: 'number', default: 1, min: 1, max: 16 }],
+        lines: [
+          { wq_product_id: 352482, label: 'Standard Maintenance Call-Out (including 1st hour)' },
+          { wq_product_id: 352483, label: 'Standard Maintenance Call-Out (per subsequent hour)', qty: 'hours - 1', when: 'hours > 1' }
+        ] },
+      { key: 'rack-tidy', title: 'Rack tidy', icon: '🗄', service_nn: '09', blurb: 'Full rack tidy and cleaning',
+        questions: [],
+        lines: [{ wq_product_id: 1038667, label: 'Full rack tidy & cleaning' }] }
+    ]
+  };
+  window.__ESTIMATE_APP_CONFIG__ = { version: '0.1.0', kind: 'quick-job', slot: 'estimate-quick-job' };
+})();

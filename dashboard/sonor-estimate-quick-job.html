@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="graphite">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Job — Sonor</title>
+<link rel="icon" href="../data/favicon.svg" type="image/svg+xml">
+<!-- Spine v1.3 import order (§2 / S-4.1.a): theme FIRST, brand.css, served kit, shared chrome, then the app layer. Synced copies — masters at workspace root. -->
+<script src="../data/sonor-theme.js"></script>
+<link rel="stylesheet" href="../data/brand.css">
+<script type="module" src="https://apps.sonor.co.uk/sonor-kit/v1/kit.js" onerror="import('./../data/kit/kit.js')"></script>
+<link rel="stylesheet" href="../data/sonor-header.css">
+<link rel="stylesheet" href="../data/sonor-components.css">
+<link rel="stylesheet" href="../data/app-vars.css">
+<link rel="stylesheet" href="../data/sonor-shell.css">
+<link rel="stylesheet" href="../data/sonor-estimate-app.css">   <!-- root master — the estimate family layout (est-* classes) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" integrity="sha384-GFr3yTh5lJznCbZfpTtXnwboFsxqtTQoeTZCRHhE0579KrRmlCzen5AA8ohaB5ug" crossorigin="anonymous"></script>
+<script src="../sonor-db.js"></script>
+<script src="../data/sonor-brand.js"></script>
+<script src="../data/sonor-app.js"></script>
+<script src="../data/sonor-header.js"></script>
+<script src="../data/sonor-palette.js"></script>
+<script src="../data/sonor-shell.js"></script>
+<script src="../data/sonor-project-list.js"></script>
+<script src="../data/sonor-project-bus.js"></script>
+<script src="../data/sonor-project-bar.js"></script>
+<script src="../data/sonor-wq-push.js"></script>
+<script src="../data/sonor-estimate.js"></script>             <!-- root master — evalQty (the ONE expression engine) -->
+<script src="../data/sonor-estimate-templates.js"></script>   <!-- root master — offline tier of estimate_templates -->
+<script src="../data/estimate-quick-job-config.js"></script>  <!-- built-in quick-job recipes (table copy wins when newer) -->
+<script src="../data/quick-job-app.js"></script>              <!-- app-local UI -->
+<style>
+/* app-local layout only — tokens from brand.css, surfaces from the shared .card / .est-sec (§2, §38) */
+.qj-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+@media (max-width: 1180px) { .qj-grid { grid-template-columns: 260px minmax(0, 1fr); } .qj-grid > :last-child { grid-column: 1 / -1; } }
+@media (max-width: 760px) { .qj-grid { grid-template-columns: 1fr; } }
+.qj-recipes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.qj-recipe { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px; min-height: 84px; text-align: left; cursor: pointer; color: var(--text-primary); font: inherit; border-left: 4px solid var(--svc, var(--border-strong)); }
+.qj-recipe:disabled { opacity: .5; cursor: not-allowed; }
+.qj-ico { font-size: 18px; line-height: 1; }
+.qj-title { flex: 1; font-size: 14px; }
+.qj-qs { margin: 10px 0 6px; }
+.qj-q-wide { grid-column: 1 / -1; }
+.qj-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.qj-opt { min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-1, var(--surface-card)); color: var(--text-primary); font: inherit; font-size: 13px; cursor: pointer; }
+.qj-opt.on { border-color: var(--svc, var(--accent)); box-shadow: inset 0 0 0 1px var(--svc, var(--accent)); font-weight: 600; }
+.qj-step { display: flex; gap: 4px; align-items: center; }
+.qj-step .btn { min-width: 36px; min-height: 36px; }
+.qj-step .input { width: 64px; text-align: center; }
+.qj-bool input { width: 22px; height: 22px; }
+.qj-lines { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+.qj-lines td { padding: 5px 6px; border-top: 1px solid var(--border); vertical-align: top; }
+.qj-qty { width: 42px; text-align: right; }
+.qj-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.qj-log { max-height: 220px; overflow: auto; font-size: 11px; background: var(--bg-1, var(--surface-card)); border: 1px solid var(--border); border-radius: 6px; padding: 8px; white-space: pre-wrap; }
+.qj-hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.qj-hist .on { font-weight: 600; }
+.est-left .card .est-in { margin-bottom: 8px; }
+#qjMain .est-in > span { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+#qjMain .est-in > span em { font-size: 11px; }
+.qj-after { font-size: 11.5px; color: var(--text-muted); margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<header class="header" id="sonor-header"></header>
+<div id="projectBarHost"></div>
+<div class="est-main">
+  <!-- S-4.14 tab bar — actions rail LAST -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="quick">Quick job</button>
+    <div class="nav-actions" id="qjActions"></div>
+  </div>
+  <main id="qjMain"></main>
+</div>
+<script>
+// VERSION — single source of truth in code (site 1 of 5, S-4.3)
+const APP_VERSION = '0.1.0';
+window.__ESTIMATE_APP__ = { kind: 'quick-job', appKey: 'estimate-quick-job', version: APP_VERSION };
+(function boot() {
+  const shell = SonorShell.mount({
+    appKey: 'estimate-quick-job', appName: 'Quick Job', repo: 'sonor-estimate-quick-job',
+    version: APP_VERSION, faviconHref: '../data/favicon.svg', assetBase: '../data/',
+    supabase: true,
+    requires: ['SonorProjectList', 'SonorProjectBar', 'SonorEstimate', 'QuickJobApp', 'SonorWqPush'],
+    palette: {
+      self: 'estimate-quick-job',
+      providers: [() => [
+        { id: 'cmd:save', label: 'Save quick job', hotkey: 'S', run: () => QuickJobApp.save() },
+        { id: 'cmd:new', label: 'New quick job', run: () => QuickJobApp.newJob() },
+        { id: 'cmd:push', label: 'Create / push WeQuote quote', run: () => QuickJobApp.push(false) }
+      ]]
+    }
+  });
+  QuickJobApp.boot(shell.ready);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+/* ESTIMATE - Whole House — app-vars.css
+   Thin aliasing layer. Generic tokens from brand.css → app vocabulary.
+   NO raw hex. NO :root palette. Per Spine S-4.1 + S-4.2. */
+
+:root {
+  /* Example aliases — edit for this app's semantics */
+  --estimate-whole-home-surface: var(--surface-card);
+  --estimate-whole-home-accent:  var(--purple);
+}

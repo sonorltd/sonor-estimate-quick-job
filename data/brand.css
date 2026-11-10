@@ -1,0 +1,226 @@
+/**
+ * Sonor Smart Homes — Brand CSS Custom Properties
+ * Auto-generated from brand-core.xml on 2026-10-16
+ * Do NOT edit — run: python3 generate-brand.py
+ */
+
+/* ═══ Service Colours ═══ */
+:root {
+  --purple: #8058a1;  /* Home Cinema */
+  --aqua: #4bb9d3;  /* Multiroom Audio */
+  --green: #78ba57;  /* TV Everywhere */
+  --yellow: #f5d05c;  /* Smart Lighting */
+  --terracotta: #e37c59;  /* Home Automation */
+  --red: #ec6061;  /* Climate */
+  --pink: #e67eb1;  /* Control */
+  --gold: #ad9978;  /* CCTV & Security */
+  --silver: #b7b1a7;  /* Whole Home WiFi */
+  --charcoal: #302f2e;  /* Design & Cabling */
+  --accent: #2d718b;  /* App accent */
+  --nav-chrome-deep: #0a1929;  /* Nav Ink Deep */
+  --nav-chrome-mid: #0f2a44;  /* Nav Ink Mid */
+  --nav-chrome-mix-pct: 22%;  /* Aqua-into-navy mix % for gradient endpoint */
+}
+
+/* ═══ Positional Service Aliases (Spine S-4.14) ═══ */
+/* Use for positional cycles (tab underlines, :nth-child loops). */
+/* Canonical order: 01 purple → 10 charcoal. Never reassign. */
+:root {
+  --s01: var(--purple);  /* Home Cinema */
+  --s02: var(--aqua);  /* Multiroom Audio */
+  --s03: var(--green);  /* TV Everywhere */
+  --s04: var(--yellow);  /* Smart Lighting */
+  --s05: var(--terracotta);  /* Home Automation */
+  --s06: var(--red);  /* Climate */
+  --s07: var(--pink);  /* Control */
+  --s08: var(--gold);  /* CCTV & Security */
+  --s09: var(--silver);  /* Whole Home WiFi */
+  --s10: var(--charcoal);  /* Design & Cabling */
+}
+
+/* ═══ Earthy Theme — s-vars (Homepage, About, Pricing, all Service pages) ═══ */
+:root,
+[data-theme='earthy'] {
+  --paper: #2C2218;
+  --s1: #F2EDE5;
+  --s2: #EDE6D9;
+  --s3: #E6DDD0;
+  --s4: #D9CFC0;
+  --text-primary: #2C2218;
+  --text-secondary: #5a4e3e;
+  --text-muted: #8B7D6B;
+  --border: rgba(44,34,24,0.12);
+  --border-strong: rgba(44,34,24,0.22);
+  --footer-bg: #141008;
+}
+
+/* ═══ Earthy Theme — bg-vars (All Location pages) ═══ */
+[data-scheme='bg-vars'] {
+  --bg-0: #F2EDE5;
+  --bg-1: #EDE6D9;
+  --bg-2: #E6DDD0;
+  --bg-3: #D9CFC0;
+  --bg-4: #C8BC9C;
+  --bg-6: #2C2218;
+}
+
+/* ═══ Dark Theme ═══ */
+[data-theme='dark'] {
+  --body: #141008;
+  --wordmark: #f4f1ec;
+  --back-wordmark: #8B7D6B;
+  --text-primary: #F4F1EC;
+  --text-secondary: #b0a898;
+  --text-muted: #7a7464;
+}
+
+/* ═══ Nocturne Theme ═══ */
+[data-theme='nocturne'] {
+  --bg-0: #090807;
+  --bg-1: #111010;
+  --bg-2: #1a1814;
+  --bg-3: #222018;
+  --bg-4: #2a2826;
+  --bg-5: #555045;
+  --bg-6: #F4F1EC;
+  --text-primary: #F4F1EC;
+  --text-secondary: #b0a898;
+  --text-muted: #7a7464;
+  --text-faint: #444038;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.13);
+  --surface-deep: #050403;
+  --surface-bar: rgba(9,8,7,0.97);
+  --surface-text: #F4F1EC;
+  --surface-hover: #ad9978;
+  --cta-bg: #151310;
+  --cta-text: #F4F1EC;
+  --cta-hover: #ad9978;
+  --scrim: rgba(9,8,7,0.85);
+  --nav-chrome-deep: #050a14;
+  --nav-chrome-mid: #0a1a2e;
+  --nav-chrome-mix-pct: 18%;  /* Aqua-into-navy mix % override */
+}
+
+/* ═══ Slate Theme ═══ */
+[data-theme='slate'] {
+  --bg-0: #D1D6DD;
+  --bg-1: #DDE1E7;
+  --bg-2: #BEC4CD;
+  --bg-3: #AAB1BC;
+  --bg-4: #8E96A3;
+  --bg-5: #636C7A;
+  --bg-6: #1A1F28;
+  --text-primary: #1A1F28;
+  --text-secondary: #475161;
+  --text-muted: #636C7A;
+  --text-faint: #A8B0BC;
+  --border: rgba(20,30,50,0.10);
+  --border-strong: rgba(20,30,50,0.18);
+  --surface-deep: #151A22;
+  --surface-bar: rgba(21,26,34,0.97);
+  --surface-text: #F4F5F8;
+  --surface-hover: #4B5668;
+  --cta-bg: #1C222B;
+  --cta-text: #F4F5F8;
+  --cta-hover: #4B5668;
+  --scrim: rgba(21,26,34,0.85);
+  --wordmark: #1A1F28;
+}
+
+/* ═══ Graphite Theme ═══ */
+[data-theme='graphite'] {
+  --bg-0: #1C1C1E;
+  --bg-1: #242426;
+  --bg-2: #2C2C2E;
+  --bg-3: #3A3A3C;
+  --bg-4: #48484A;
+  --bg-5: #636366;
+  --bg-6: #F5F5F7;
+  --text-primary: #F5F5F7;
+  --text-secondary: #C7C7CC;
+  --text-muted: #98989D;
+  --text-faint: #7C7C82;
+  --border: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+  --surface-deep: #141416;
+  --surface-bar: rgba(28,28,30,0.97);
+  --surface-text: #F5F5F7;
+  --surface-hover: #3A3A3C;
+  --cta-bg: #3A8AA8;
+  --cta-text: #F5F5F7;
+  --cta-hover: #4BA3C2;
+  --scrim: rgba(20,20,22,0.85);
+  --wordmark: #F5F5F7;
+  --accent: #3A8AA8;
+  --nav-chrome-deep: #141416;
+  --nav-chrome-mid: #1C1C1E;
+  --nav-chrome-mix-pct: 10%;  /* Aqua-into-navy mix % override */
+}
+
+/* ═══ UI Scale — type · space · radius · motion · z · shadow (B-478 / B-479) ═══ */
+/* Reference these in apps and the shared kit instead of hard-coded px. */
+:root {
+  /* type — Gilroy / DM Sans UI sizes — 13px is the app base, 11px the smallest legible chrome */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-base: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-body: 1.5;
+  --tracking-caps: .08em;
+  --font-ui: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', Menlo, monospace;
+  --font-brand: 'Gilroy', 'DM Sans', system-ui, sans-serif;
+  /* space — 4px base grid */
+  --sp-0: 0;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  /* radius */
+  --r-xs: 3px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-pill: 999px;
+  /* motion — fast = hover/focus, base = menus/modals, slow = page-level; zeroed under prefers-reduced-motion */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --ease-in: cubic-bezier(.4,0,1,1);
+  /* z — stacking — keep every app inside this ladder */
+  --z-bar: 100;
+  --z-menu: 120;
+  --z-sticky: 150;
+  --z-modal: 1000;
+  --z-toast: 1100;
+  /* shadow */
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.08);
+  --shadow-md: 0 6px 18px rgba(15,23,42,.14);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,.22);
+  /* status — TRAFFIC LIGHT (sonor-platform §23, Bryn 2026-10-01: 'you're using yellow but this should be amber') — ok · amber · bad · info. Status is NEVER the 04 Lighting service yellow (#f5d05c); amber is its own token. Every app's --warn/--warning/--danger/--ok alias resolves here via vocab. */
+  --status-ok: #3DB56F;
+  --status-amber: #E0922F;
+  --status-bad: #E2524F;
+  --status-info: #3B9DD8;
+  --amber: #E0922F;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}
+

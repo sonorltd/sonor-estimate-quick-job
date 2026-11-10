@@ -1,0 +1,474 @@
+/* sonor-edit-panel.css — CANONICAL MASTER (Spine v1.2 §15, S-4.15)
+ *
+ * Standard edit-window styling for every Sonor browser app.
+ * Propagated to `APP - */data/sonor-edit-panel.css` by sync-everything.sh.
+ * NEVER hand-edit per-app copies — edit this master and re-run the sync.
+ *
+ * Consumes CSS custom properties from data/brand.css + the app's
+ * data/app-vars.css aliasing layer (never hardcodes hex).
+ *
+ * Namespace: `.sonor-edit-*` — avoids collisions with app-local classes.
+ *
+ * 2026-10-31 — text / input / hover fall back to the theme tokens (--text-primary,
+ * --bg-1, --bg-2) before the earthy hex: graphite defines none of --body-text /
+ * --input-bg / --hover, so labels rendered dark-on-dark and inputs white (dark law).
+ */
+
+/* Backdrop (behind panel) */
+.sonor-edit-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 16, 8, 0.36);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+.sonor-edit-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Panel (slides in from right) */
+.sonor-edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  background: var(--panel, #FFFCF7);
+  color: var(--body-text, var(--text-primary, #2C2218));
+  box-shadow: -12px 0 32px rgba(20, 16, 8, 0.18);
+  z-index: 9999;
+  transform: translateX(100%);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 220ms;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body, 'DM Sans', system-ui, -apple-system, sans-serif);
+  /* B-358 (2026-07-06) — closed panels are hidden AND unfocusable, not just
+     off-canvas. A translateX(100%)-parked panel kept its inputs in the tab
+     order; focus landing in one either typed into an invisible panel (fixed)
+     or scrolled the viewport sideways (absolute variants — the Library
+     v1.41.1 stuck-panel bug). The 0s/220ms visibility delay preserves the
+     slide-out animation. Recipe proven in Library v1.41.1. */
+  visibility: hidden;
+}
+.sonor-edit-panel.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0s;
+}
+
+/* Header */
+.sonor-edit-header {
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--border, rgba(44, 34, 24, 0.08));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+.sonor-edit-header-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sonor-edit-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--body-text, var(--text-primary, #2C2218));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sonor-edit-subtitle {
+  font-size: 12px;
+  color: var(--muted, #8B7D6B);
+  margin-top: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Close button */
+.sonor-edit-close {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #8B7D6B);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms, color 120ms;
+}
+.sonor-edit-close:hover {
+  background: var(--hover, var(--bg-2, rgba(44, 34, 24, 0.06)));
+  color: var(--body-text, var(--text-primary, #2C2218));
+}
+
+/* Body (scrollable) */
+.sonor-edit-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 6px 20px 20px;
+}
+
+/* Section heading — v0.2.0 Library-style themed banner:
+   icon + tinted uppercase label + pill chip + rule line.
+   Tint via --sec-tint (set inline by the renderer when the schema passes
+   `tint`); plain string sections render label-only, same as v0.1.x. */
+.sonor-edit-section {
+  margin-top: 20px;
+  padding-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sec-tint, var(--muted, #8B7D6B));
+  border-top: 1px dashed var(--border, rgba(44, 34, 24, 0.08));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sonor-edit-section:first-child {
+  margin-top: 12px;
+  border-top: 0;
+}
+.sonor-edit-section-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1;
+}
+.sonor-edit-section-label {
+  white-space: nowrap;
+}
+.sonor-edit-section-pill {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--sec-tint, currentColor) 45%, transparent);
+  background: color-mix(in srgb, var(--sec-tint, currentColor) 10%, transparent);
+  color: var(--sec-tint, var(--muted, #8B7D6B));
+  white-space: nowrap;
+}
+.sonor-edit-section-rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: color-mix(in srgb, var(--sec-tint, var(--border, #d8d2c8)) 35%, transparent);
+}
+
+/* Field row */
+.sonor-edit-field {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sonor-edit-field[data-hidden="1"] { display: none; }
+
+.sonor-edit-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--body-text, var(--text-primary, #2C2218));
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.sonor-edit-label[data-required="1"]::after {
+  content: "*";
+  color: var(--accent, #6b4a8a);
+  margin-left: 2px;
+}
+.sonor-edit-help {
+  font-size: 11px;
+  color: var(--muted, #8B7D6B);
+  margin-top: -2px;
+}
+
+/* Inputs */
+.sonor-edit-input,
+.sonor-edit-textarea,
+.sonor-edit-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--body-text, var(--text-primary, #2C2218));
+  background: var(--input-bg, var(--bg-1, #FFFFFF));
+  border: 1px solid var(--border-strong, rgba(44, 34, 24, 0.18));
+  border-radius: 6px;
+  transition: border-color 120ms, box-shadow 120ms;
+  font-family: inherit;
+}
+.sonor-edit-input:focus,
+.sonor-edit-textarea:focus,
+.sonor-edit-select:focus {
+  outline: none;
+  border-color: var(--accent, #6b4a8a);
+  box-shadow: 0 0 0 3px rgba(107, 74, 138, 0.16);
+}
+.sonor-edit-textarea {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.4;
+}
+.sonor-edit-input[readonly] {
+  background: var(--hover, var(--bg-2, rgba(44, 34, 24, 0.04)));
+  color: var(--muted, #8B7D6B);
+}
+
+/* Toggle */
+.sonor-edit-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+.sonor-edit-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.sonor-edit-toggle input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.sonor-edit-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-strong, rgba(44, 34, 24, 0.25));
+  border-radius: 22px;
+  transition: background 160ms;
+}
+.sonor-edit-toggle-slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #FFF;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: transform 160ms;
+}
+.sonor-edit-toggle input:checked ~ .sonor-edit-toggle-slider {
+  background: var(--accent, #6b4a8a);
+}
+.sonor-edit-toggle input:checked ~ .sonor-edit-toggle-slider::before {
+  transform: translateX(18px);
+}
+.sonor-edit-toggle-label {
+  font-size: 13px;
+  color: var(--body-text, var(--text-primary, #2C2218));
+}
+
+/* Colour picker */
+.sonor-edit-colour {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sonor-edit-colour-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong, rgba(44, 34, 24, 0.18));
+  flex: 0 0 auto;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.sonor-edit-colour-swatch::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 3px;
+  background: var(--sonor-swatch-colour, transparent);
+}
+.sonor-edit-colour input[type="color"] {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.sonor-edit-colour-text {
+  flex: 1 1 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.sonor-edit-colour-clear {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  font-size: 11px;
+  background: transparent;
+  color: var(--muted, #8B7D6B);
+  border: 1px solid var(--border, rgba(44, 34, 24, 0.18));
+  border-radius: 4px;
+  cursor: pointer;
+}
+.sonor-edit-colour-clear:hover {
+  color: var(--body-text, var(--text-primary, #2C2218));
+  border-color: var(--border-strong, rgba(44, 34, 24, 0.3));
+}
+
+/* Pill group */
+.sonor-edit-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sonor-edit-pill {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--pill-bg, rgba(44, 34, 24, 0.05));
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--muted, #8B7D6B);
+  transition: all 120ms;
+  font-family: inherit;
+}
+.sonor-edit-pill:hover {
+  color: var(--body-text, var(--text-primary, #2C2218));
+  background: var(--hover, var(--bg-2, rgba(44, 34, 24, 0.08)));
+}
+.sonor-edit-pill.is-selected {
+  /* v0.2.0 — honour the per-option accent the renderer sets (--pill-accent);
+     falls back to the app accent for un-coloured option lists */
+  background: var(--pill-accent, var(--accent, #6b4a8a));
+  color: #FFF;
+  border-color: var(--pill-accent, var(--accent, #6b4a8a));
+  font-weight: 600;
+}
+
+/* Validation */
+.sonor-edit-field[data-invalid="1"] .sonor-edit-input,
+.sonor-edit-field[data-invalid="1"] .sonor-edit-textarea,
+.sonor-edit-field[data-invalid="1"] .sonor-edit-select {
+  border-color: var(--red, #ec6061);
+  box-shadow: 0 0 0 3px rgba(236, 96, 97, 0.14);
+}
+.sonor-edit-error {
+  font-size: 11px;
+  color: var(--red, #ec6061);
+  margin-top: 2px;
+}
+
+/* Footer (actions) */
+.sonor-edit-footer {
+  flex: 0 0 auto;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border, rgba(44, 34, 24, 0.08));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel, #FFFCF7);
+}
+.sonor-edit-footer-spacer { flex: 1 1 auto; }
+
+.sonor-edit-btn {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 120ms;
+  font-family: inherit;
+}
+.sonor-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sonor-edit-btn-primary {
+  background: var(--accent, #6b4a8a);
+  color: #FFF;
+  border-color: var(--accent, #6b4a8a);
+}
+.sonor-edit-btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong, #583a73);
+  border-color: var(--accent-strong, #583a73);
+}
+.sonor-edit-btn-secondary {
+  background: transparent;
+  color: var(--body-text, var(--text-primary, #2C2218));
+  border-color: var(--border-strong, rgba(44, 34, 24, 0.18));
+}
+.sonor-edit-btn-secondary:hover:not(:disabled) {
+  background: var(--hover, var(--bg-2, rgba(44, 34, 24, 0.06)));
+}
+.sonor-edit-btn-danger {
+  background: transparent;
+  color: var(--red, #ec6061);
+  border-color: transparent;
+}
+.sonor-edit-btn-danger:hover:not(:disabled) {
+  background: rgba(236, 96, 97, 0.1);
+}
+
+/* Dirty state indicator */
+.sonor-edit-dirty-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent, #6b4a8a);
+  margin-right: 6px;
+  vertical-align: middle;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.sonor-edit-panel[data-dirty="1"] .sonor-edit-dirty-dot {
+  opacity: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 520px) {
+  .sonor-edit-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+  .sonor-edit-header { padding: 14px 14px 10px; }
+  .sonor-edit-body { padding: 6px 14px 14px; }
+  .sonor-edit-footer { padding: 12px 14px; }
+}
+
+/* Dark theme scope (apps that opt in with [data-theme="dark"]) */
+[data-theme="dark"] .sonor-edit-panel {
+  background: var(--panel, #1C1815);
+  color: var(--body-text, var(--text-primary, #F2EDE5));
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.5);
+}
+[data-theme="dark"] .sonor-edit-input,
+[data-theme="dark"] .sonor-edit-textarea,
+[data-theme="dark"] .sonor-edit-select {
+  background: var(--input-bg, #242019);
+  color: var(--body-text, var(--text-primary, #F2EDE5));
+  border-color: var(--border-strong, rgba(242, 237, 229, 0.15));
+}

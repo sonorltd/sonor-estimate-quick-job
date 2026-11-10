@@ -1,0 +1,21 @@
+{
+  "version": "0.11.0",
+  "built": "2026-10-31T21:14:28.976122Z",
+  "modules": [
+    "sonor-theme.js",
+    "sonor-icons.js",
+    "sonor-takeoffs-modal.js",
+    "sonor-project-bar.js",
+    "sonor-wq-bar.js",
+    "sonor-slot-grid.js",
+    "sonor-rack-calc.js",
+    "sonor-sortable.js",
+    "sonor-catalogue-picker.js",
+    "sonor-rack-data.js",
+    "sonor-library-bar.js",
+    "sonor-links.js",
+    "sonor-who.js",
+    "sonor-jump.js"
+  ],
+  "css": "kit.css"
+}

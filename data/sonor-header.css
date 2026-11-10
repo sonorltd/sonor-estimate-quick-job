@@ -1,0 +1,137 @@
+/* Sonor Shared Styles — base theme + header layout (2026-09-29: ≤480px phone rules)
+   Source of truth for CSS across all apps.
+   Import via <link rel="stylesheet" href="data/sonor-header.css">
+   Copy into each repo's data/ directory for GitHub Pages.
+
+   Values from brand-core.xml → Supabase brand_config.
+   Apps may extend (add variables) but must not override the base set.
+*/
+
+/* ── Earthy Theme fallback (for pre-Spine apps without data-theme) ──
+   Note: apps with [data-theme='earthy'|'slate'|'nocturne'] get their palette
+   from brand.css (loaded first in the import chain). This :root block is a
+   safety net for apps that haven't been migrated yet. Per Spine S-4.1 the
+   canonical palette lives in brand-core.xml → dist/brand.css.
+
+   2026-04-21 (v1.2.5): --accent flipped from Deep Purple (#6b4a8a) to
+   Signal Blue (#2d718b) when the nav_chrome gradient was baked into
+   brand-core. Signal Blue is the 50/50 mix of nav_chrome_mid (#0f2a44)
+   and service 02 aqua (#4bb9d3) — sits in the gradient family, not a
+   service colour, works on both light and dark bodies.
+
+   2026-09-29 (B-487): scoped to :root:not([data-theme]) — this block used to load AFTER brand.css and silently
+   overrode every theme's text / border tokens with the earthy values (why slate text was #2C2218 and graphite text
+   came out dark on dark). Themed apps now get their palette purely from brand.css; unthemed pages keep the net. */
+:root:not([data-theme]) {
+  --body: #F2EDE5;
+  --section-1: #EDE6D9;
+  --section-2: #CFC5B2;
+  --clay: #D9CFC0;
+  --text-primary: #2C2218;
+  --text-secondary: #5a4e3e;
+  --text-muted: #8B7D6B;
+  --footer-bg: #141008;
+  --cta-bg: #1e1810;
+  --accent: #2d718b;
+  --accent-light: #4bb9d3;
+  --border: rgba(44,34,24,0.12);
+  --border-strong: rgba(44,34,24,0.22);
+  /* Nav chrome gradient — safety-net fallback only. Real tokens come
+     from dist/brand.css which also carries per-theme overrides. */
+  --nav-chrome-deep: #0a1929;
+  --nav-chrome-mid: #0f2a44;
+  --nav-chrome-mix-pct: 22%;
+  /* Service colours — theme-independent per brand-core.xml */
+  --s01: #8058a1; --s02: #4bb9d3; --s03: #78ba57; --s04: #f5d05c; --s05: #e37c59;
+  --s06: #ec6061; --s07: #e67eb1; --s08: #ad9978; --s09: #b7b1a7; --s10: #302f2e;
+}
+
+/* ── Legacy-token bridge: REMOVED 2026-09-29 (sonor-platform §14). Every app colour name is now an alias of a brand
+   token in Branding - CORE/brand-core.xml <vocab>, generated to dist/sonor-vocab.css and injected by sonor-theme.js —
+   one file, every theme, no hand-typed hex tables. ── */
+
+/* ── Header bar ──
+   Chrome-vs-body polarity rule (B-171a lesson, 2026-04-21):
+   The header is a dark chrome zone regardless of the body theme. It sits on
+   --surface-deep (dark on every theme) with --surface-text (light on every
+   theme). Apps without a data-theme fall back to earthy (#141008 / #F2EDE5)
+   via var() fallbacks — so earthy-era apps stay identical and nocturne/slate
+   pick up their theme-correct chrome automatically.
+
+   Gradient (v1.2.5, 2026-04-21 — baked into brand-core):
+   Three-stop deep navy → audio-aqua (service 02) tint. All three stops
+   now come from brand-core.xml <nav_chrome> tokens emitted into
+   dist/brand.css — no hardcoded hexes here. The accent endpoint is
+   computed with color-mix() of --s02 into --nav-chrome-mid at the
+   per-theme --nav-chrome-mix-pct (22% default, 18% on nocturne).
+
+   Theme overrides are driven entirely by [data-theme='nocturne'] in
+   brand.css swapping --nav-chrome-deep / --nav-chrome-mid / --nav-chrome-mix-pct
+   — this rule does NOT need a nocturne-specific duplicate. Single gradient,
+   theme-reactive via cascading variables.
+*/
+.header {
+  background: var(--nav-chrome-deep, var(--surface-deep, #0a1929));
+  background-image: linear-gradient(
+    120deg,
+    var(--nav-chrome-deep, #0a1929) 0%,
+    var(--nav-chrome-mid, #0f2a44) 45%,
+    color-mix(in srgb, var(--s02, #4bb9d3) var(--nav-chrome-mix-pct, 22%), var(--nav-chrome-mid, #0f2a44)) 100%
+  );
+  color: var(--surface-text, #F2EDE5);
+  padding: 7px 24px;              /* 2026-09-29: compact header (was 16px 32px) — more room for the app itself */
+  min-height: 46px;
+  box-sizing: border-box;        /* Library etc. have content-box resets — keep the 46px the same everywhere */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,.25), inset 0 -1px 0 rgba(75,185,211,.08);
+}
+.header .logo { display: flex; align-items: center; gap: 12px; }
+.header .logo-link { display: flex; align-items: center; text-decoration: none; color: inherit; transition: opacity .2s; }
+.header .logo-link:hover { opacity: 0.85; }
+.header .app-name { font-size: 16px; font-weight: 300; letter-spacing: 1.5px; color: color-mix(in srgb, var(--surface-text, #F2EDE5) 55%, transparent); text-transform: uppercase; }
+
+/* ── Right-aligned group: version, DB status, links (service dots are opt-in via SonorHeader.init({showDots:true})) ── */
+.header .header-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.header .badge-row { display: flex; gap: 4px; }
+.header .svc-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ── DB status indicator ── */
+.db-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: color-mix(in srgb, var(--surface-text, #F2EDE5) 55%, transparent); padding: 2px 8px; }
+.db-dot { width: 8px; height: 8px; border-radius: 50%; background: #f5d05c; transition: background .3s; }
+.db-dot.live { background: #78ba57; box-shadow: 0 0 6px #78ba5766; }
+.db-dot.offline { background: color-mix(in srgb, var(--surface-text, #F2EDE5) 45%, transparent); box-shadow: none; }
+.db-dot.error { background: #ec6061; box-shadow: 0 0 6px #ec606166; }
+.db-label { letter-spacing: .5px; }
+.live-badge { display: none; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: #78ba5722; color: #78ba57; letter-spacing: .8px; text-transform: uppercase; margin-left: 4px; }
+/* LIVE badge is CSS-gated — only visible when the dot is in .live state.
+   This makes the feature idempotent by structure, independent of per-app JS. */
+.db-dot.live ~ .live-badge { display: inline-block; }
+
+/* ── GitHub / Supabase quicklinks ── */
+.header-links { display: flex; gap: 8px; align-items: center; }
+.header-links a { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); transition: all .2s; color: color-mix(in srgb, var(--surface-text, #F2EDE5) 72%, transparent); text-decoration: none; }
+.header-links a:hover { background: rgba(255,255,255,.15); color: var(--surface-text, #F2EDE5); }
+.header-links a svg { width: 16px; height: 16px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header { padding: 6px 12px; gap: 10px; }
+  .header .app-name { font-size: 15px; }
+  .header .badge-row { display: none; }
+  .header-links { gap: 4px; }
+  .header .header-right { gap: 8px; }
+}
+/* phone (2026-09-29, Board on the Monday push): keep the header inside the viewport — the DB dot + LIVE badge
+   carry the state, so the "Supabase" word and the GH / Supabase quick-links are dropped, version stays. */
+@media (max-width: 480px) {
+  .header { overflow: hidden; }
+  .header .app-name { letter-spacing: 1px; }
+  .header .db-label { display: none; }
+  .header .header-links { display: none; }
+  .header .header-right { gap: 6px; }
+}
