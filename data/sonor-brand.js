@@ -203,6 +203,7 @@ window.__SONOR_BRAND__ = {
       'estimate-media-wall': '../APP - ESTIMATE - Media Wall/dashboard/sonor-estimate-media-wall.html',   // B-809
       'estimate-media-room': '../APP - ESTIMATE - Media Room/dashboard/sonor-estimate-media-room.html',   // B-809
       'estimate-whole-home': '../APP - ESTIMATE - Whole House/dashboard/sonor-estimate-whole-home.html',   // B-809
+      'estimate-quick-job': '../APP - ESTIMATE - Quick Job/dashboard/sonor-estimate-quick-job.html',   // 2026-11-10
       'led-calc':     '../APP - LED Calc/dashboard/sonor-led-calc.html',
       'knx-panel':    '../APP - KNX Panel Builder/dashboard/sonor-knx-panel.html',
       'c4-integration': '../APP - C4 Integration/dashboard/sonor-c4-integration.html',
@@ -317,6 +318,7 @@ window.__SONOR_BRAND__ = {
       'estimate-media-wall': 'https://apps.sonor.co.uk/sonor-estimate-media-wall/',   // B-809
       'estimate-media-room': 'https://apps.sonor.co.uk/sonor-estimate-media-room/',   // B-809
       'estimate-whole-home': 'https://apps.sonor.co.uk/sonor-estimate-whole-home/',   // B-809
+      'estimate-quick-job': 'https://apps.sonor.co.uk/sonor-estimate-quick-job/',   // 2026-11-10
       'led-calc':     'https://apps.sonor.co.uk/sonor-led-calc/',
       'knx-panel':    'https://apps.sonor.co.uk/sonor-knx-panel/',
       'c4-integration': 'https://apps.sonor.co.uk/sonor-c4-integration/',
