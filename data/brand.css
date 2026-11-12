@@ -1,6 +1,6 @@
 /**
  * Sonor Smart Homes — Brand CSS Custom Properties
- * Auto-generated from brand-core.xml on 2026-10-16
+ * Auto-generated from brand-core.xml on 2026-11-12
  * Do NOT edit — run: python3 generate-brand.py
  */
 
@@ -156,6 +156,26 @@
   --nav-chrome-deep: #141416;
   --nav-chrome-mid: #1C1C1E;
   --nav-chrome-mix-pct: 10%;  /* Aqua-into-navy mix % override */
+}
+
+/* ═══ Luxury Theme ═══ */
+[data-theme='luxury'] {
+  --bg-0: #FBFAF7;
+  --text-primary: #1A1814;
+  --text-secondary: #3C372F;
+  --text-muted: #787060;
+  --text-label: #968A74;
+  --page-no: #AAA08C;
+  --border: #D6CDBC;
+  --night-0: #090807;
+  --night-1: #161318;
+  --night-title: #FBFAF7;
+  --night-info: #A89C88;
+  --scrim: rgba(9,8,7,0.85);
+  --gold: #AD9978;
+  --gold-light: #C8B48E;
+  --gold-deep: #8C743C;
+  --accent-aircon: #88FEFF;
 }
 
 /* ═══ UI Scale — type · space · radius · motion · z · shadow (B-478 / B-479) ═══ */
