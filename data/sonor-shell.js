@@ -33,7 +33,7 @@
   'use strict';
   if (global.SonorShell && global.SonorShell.__loaded) return;
 
-  var SHELL_VERSION = '1.1.1'; // v1.1.1: versionId passthrough (Master Hub's hubVersion badge)
+  var SHELL_VERSION = '1.1.2'; // v1.1.2: autoload skips a file already loaded from the served copy · v1.1.1: versionId passthrough (Master Hub's hubVersion badge)
   var _manifest = null;
   var _toastEl = null;
   var _toastTimer = null;
@@ -60,8 +60,14 @@
   // ── Script/CSS autoloading (synced per-repo copies, never CDN) ──
   function _load(src, isCss) {
     return new Promise(function (resolve) {
-      var sel = isCss ? 'link[href="' + src + '"]' : 'script[src="' + src + '"]';
-      if (document.querySelector(sel)) return resolve(true);
+      // v1.1.2 (2026-11-25): already on the page under ANY address (the served copy ../sonor-shared/v1/<file>, or the
+      // app's own data/<file>) counts as loaded — never load a shared file twice.
+      var name = String(src).split('?')[0].split('/').pop();
+      var have = document.querySelectorAll(isCss ? 'link[href]' : 'script[src]');
+      for (var i = 0; i < have.length; i++) {
+        var u = (have[i].getAttribute(isCss ? 'href' : 'src') || '').split('?')[0].split('/').pop();
+        if (u === name) return resolve(true);
+      }
       var el;
       if (isCss) { el = document.createElement('link'); el.rel = 'stylesheet'; el.href = src; }
       else { el = document.createElement('script'); el.src = src; }
