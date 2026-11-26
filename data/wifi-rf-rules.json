@@ -1,0 +1,1214 @@
+{
+ "version": "2026-11-24b",
+ "about": "Rules for the Network Scanner Wi-Fi spectrum, Zigbee overlay, channel advice and RF tab. Same {id,text,sources} style as remotes/c4-tips.json, plus 'strength' and optional machine-readable fields. Ids are stable: never renumber, add new ids instead. Research done with web search and direct reading of sources; Apify was asked for but no Apify connector exists in this project.",
+ "strength_key": {
+  "strong": "Regulator or manufacturer document, read directly.",
+  "medium": "Credible secondary source, or manufacturer doc with a caveat noted.",
+  "heuristic": "Sonor engineering rule built from the sources and 802.11/802.15.4 basics. Use it, but tune the numbers from real site results.",
+  "unverified": "Could not confirm from a source. Show as a hint only, never as a hard rule."
+ },
+ "constants": {
+  "wifi24": {
+   "channels_uk": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+   ],
+   "centre_mhz": "2407 + 5*n",
+   "half_width_mhz_20": 11,
+   "note": "Use +-11 MHz (spectral mask skirt) for overlap tests, not +-10."
+  },
+  "wifi5_uk": [
+   {
+    "band": "A1",
+    "mhz": "5150-5250",
+    "channels_20": [
+     36,
+     40,
+     44,
+     48
+    ],
+    "dfs": false,
+    "indoor_only": true,
+    "max_eirp_mw": 200
+   },
+   {
+    "band": "A2",
+    "mhz": "5250-5350",
+    "channels_20": [
+     52,
+     56,
+     60,
+     64
+    ],
+    "dfs": true,
+    "indoor_only": true,
+    "max_eirp_mw": 200
+   },
+   {
+    "band": "B",
+    "mhz": "5470-5730",
+    "channels_20": [
+     100,
+     104,
+     108,
+     112,
+     116,
+     120,
+     124,
+     128,
+     132,
+     136,
+     140,
+     144
+    ],
+    "dfs": true,
+    "indoor_only": false,
+    "max_eirp_mw": 1000,
+    "note": "Ofcom gives 5730 MHz as the top edge, so ch 144 (5710-5730) fits. Ch 120-128 sit on weather radar (5600-5650); ETSI DFS needs a 10 minute check there, so many APs skip them."
+   },
+   {
+    "band": "C",
+    "mhz": "5725-5850",
+    "channels_20": [
+     149,
+     153,
+     157,
+     161,
+     165
+    ],
+    "dfs": false,
+    "indoor_only": true,
+    "max_eirp_mw": 200,
+    "note": "Licence-exempt indoors at 200 mW, DFS removed July 2020. Ch 169/173 are outside 5850 and not allowed. Many APs with a GB country code still hide 149-165 on older firmware."
+   }
+  ],
+  "wifi6_uk": {
+   "mhz": "5925-6425",
+   "channels_20": "1,5,9..93 (24)",
+   "channels_40": 12,
+   "channels_80": [
+    7,
+    23,
+    39,
+    55,
+    71,
+    87
+   ],
+   "channels_160": [
+    15,
+    47,
+    79
+   ],
+   "lpi_max_eirp_mw": 250,
+   "vlp_max_eirp_mw": 25,
+   "upper_6ghz": "6425-7125 MHz not opened for Wi-Fi in the sources read. Treat as not allowed."
+  },
+  "zigbee": {
+   "channels": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "centre_mhz": "2405 + 5*(k-11)",
+   "width_mhz": 2,
+   "control4_range": "11-25"
+  },
+  "rf_subghz": [
+   {
+    "system": "Somfy RTS",
+    "mhz": 433.42,
+    "modulation": "OOK, one-way",
+    "notes": "Somfy quotes up to 65 ft (about 20 m), through walls."
+   },
+   {
+    "system": "Somfy io-homecontrol (TaHoma, Velux io)",
+    "mhz": "868-870",
+    "modulation": "FSK, two-way, 3 channels",
+    "notes": "Not covered by a 433 probe."
+   },
+   {
+    "system": "Bond Bridge",
+    "mhz": "300-450 (learns per remote, e.g. 433.92, 434.0, 315)",
+    "modulation": "OOK/ASK learned",
+    "notes": "Also IR."
+   },
+   {
+    "system": "Lutron Clear Connect Type A",
+    "mhz": "434 (US); 868 band for UK/EU product lines",
+    "modulation": "FSK",
+    "notes": "Check the model label. UK RA2/RA3 are not Caseta."
+   },
+   {
+    "system": "Lutron Clear Connect Type X",
+    "mhz": "2400 (802.15.4)",
+    "notes": "Shares 2.4 GHz with Zigbee/Thread."
+   }
+  ]
+ },
+ "wifi": [
+  {
+   "id": "wifi.24.three_channels",
+   "text": "2.4 GHz: put every AP on 1, 6 or 11 at 20 MHz. Never 40 MHz on 2.4 GHz. Odd channels like 2, 3, 9 overlap two neighbours at once.",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm",
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html",
+    "https://www.netspotapp.com/wifi-channel-scanner/wifi-channel-width.html"
+   ],
+   "strength": "strong",
+   "rule": {
+    "band": "2.4",
+    "allowed": [
+     1,
+     6,
+     11
+    ],
+    "width": 20
+   }
+  },
+  {
+   "id": "wifi.24.uk_12_13",
+   "text": "UK allows 2.4 GHz channels 12 and 13. Flag any neighbour on 12 or 13: it lands on Zigbee 22-26 and weakens the usual Zigbee 25 choice. Don't use 12/13 for our own APs (some clients won't connect and it breaks the 1/6/11 grid).",
+   "sources": [
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0019/136009/Ofcom-Information-Sheet-5-GHz-RLANs.pdf",
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "wifi.cci.threshold",
+   "text": "Co-channel contention: a BSS on the same channel heard above -82 dBm (20 MHz) makes our AP wait its turn (802.11 preamble detect). Count same-channel BSSs above -82 dBm as contenders; between -82 and -90 dBm count at half weight; ignore below -90 dBm.",
+   "sources": [
+    "802.11 CCA: -82 dBm preamble detect, -62 dBm energy detect (IEEE 802.11-2020 clause 17.3.10.6)"
+   ],
+   "strength": "heuristic",
+   "rule": {
+    "same_channel_full_weight_dbm": -82,
+    "same_channel_half_weight_dbm": -90
+   }
+  },
+  {
+   "id": "wifi.aci.threshold",
+   "text": "Adjacent overlap (e.g. a neighbour on 3 next to our 1): the AP can't decode it, so it only defers above about -62 dBm, and below that the neighbour is raw noise. Weight an overlapping, non-identical channel by the share of the 22 MHz that overlaps, and treat anything above -62 dBm as a red flag.",
+   "sources": [
+    "802.11 energy detect -62 dBm"
+   ],
+   "strength": "heuristic",
+   "rule": {
+    "partial_overlap_weight": "overlap_mhz/22",
+    "red_flag_dbm": -62
+   }
+  },
+  {
+   "id": "wifi.score.algorithm",
+   "text": "Channel score (lower is better): for each candidate channel, sum over every scanned BSS (excluding our own SSIDs' BSSIDs on that AP) weight(rssi) x overlap(channel, bss span). weight = 10^((rssi+95)/10) clipped so anything under -90 dBm adds 0. Add the measured channel utilisation (if the AP reports it) and a penalty for DFS when the job needs never-interrupted AV. Recommend the lowest score; show the top 3 with reasons.",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm",
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "wifi.own.reuse",
+   "text": "Our own APs: neighbouring APs never on the same channel; on 5 GHz, two of our APs may share a channel only if each hears the other below -85 dBm. 'Place APs on channels as far apart from each other as possible.'",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "wifi.5.width",
+   "text": "5 GHz width: 1-2 APs and a quiet band, use 80 MHz; 3+ APs or busy neighbours, use 40 MHz; very busy flats/offices, 20 MHz.",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm",
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "strong",
+   "rule": {
+    "ap_count_le_2": 80,
+    "ap_count_ge_3": 40,
+    "dense": 20
+   }
+  },
+  {
+   "id": "wifi.5.non_dfs_first",
+   "text": "For AV and control (Control4, Sonos, streaming) prefer non-DFS 36-48 and 149-165. DFS channels cost a 60 s silent check at start (10 min on 120-128) and a forced move plus 30 min block if radar is heard.",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm",
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0019/136009/Ofcom-Information-Sheet-5-GHz-RLANs.pdf"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "wifi.5.dfs_ok",
+   "text": "Use DFS (52-144) to add capacity when there are 3+ APs, but only after the AP's log shows no radar events for a week. Near airports, coasts and weather radar, keep critical SSIDs off DFS.",
+   "sources": [
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0019/136009/Ofcom-Information-Sheet-5-GHz-RLANs.pdf",
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "wifi.5.band_c_check",
+   "text": "Before recommending 149-165, check the AP model and firmware supports them with country GB. If not, recommend 36-48 then DFS. UK indoor use of 149-165 is legal (Ofcom, 200 mW, no DFS since July 2020); one OpenWrt thread claims otherwise but cites no Ofcom document.",
+   "sources": [
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0019/136009/Ofcom-Information-Sheet-5-GHz-RLANs.pdf",
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0036/198927/6ghz-statement.pdf",
+    "https://draytek.co.uk/information/blog/ofcom-relax-the-rules-on-the-5ghz-band",
+    "https://forum.openwrt.org/t/title-gb-regulatory-compliance-unii-3-5725-5850-mhz-channels-allowed-despite-ofcom-ban/233976"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "wifi.5.40_pairs",
+   "text": "40 MHz on 5 GHz: pair 36+40, 44+48, 52+56, 60+64, 100+104 ... 149+153, 157+161. Neighbouring APs: 36 and 44, not 36 and 40.",
+   "sources": [
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "wifi.6.width",
+   "text": "6 GHz (UK 5925-6425 MHz only): 80 MHz by default (6 clean 80 MHz channels), 160 MHz only with 1-2 APs (3 channels). Use Preferred Scanning Channels (PSC: 5, 21, 37, 53, 69, 85) for 20 MHz primaries so clients find the AP fast.",
+   "sources": [
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html",
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0036/198927/6ghz-statement.pdf"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "wifi.6.power",
+   "text": "6 GHz indoor LPI max 250 mW EIRP, so plan 6 GHz cells smaller than 5 GHz; don't expect one 6 GHz AP to cover a house. Upper 6 GHz (6425-7125) is not open to Wi-Fi in the sources read.",
+   "sources": [
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0036/198927/6ghz-statement.pdf",
+    "https://www.ofcom.org.uk/__data/assets/pdf_file/0019/136009/Ofcom-Information-Sheet-5-GHz-RLANs.pdf"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "wifi.signal.levels",
+   "text": "Signal grades for the walk test: -30 to -50 excellent, -50 to -67 good, -67 is the minimum for voice/video/AV, -67 to -75 fair, -75 to -80 weak, below -80 bad. SNR at least 25 dB.",
+   "sources": [
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "strong",
+   "rule": {
+    "excellent": -50,
+    "good": -67,
+    "fair": -75,
+    "weak": -80,
+    "min_snr_db": 25
+   }
+  },
+  {
+   "id": "wifi.auto_channel",
+   "text": "Don't trust AP auto-channel on its own: many pick only at boot. Re-run the scanner's recommendation at handover and after neighbours change.",
+   "sources": [
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm",
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "wifi.sonos",
+   "text": "Sonos SonosNet (wired Sonos + others meshed) runs on 2.4 GHz 1, 6 or 11. Set it to a different channel from the nearest AP's 2.4 GHz radio, and keep it clear of the Control4 Zigbee channel.",
+   "sources": [
+    "Sonos support: SonosNet channel settings (not read in this research; widely documented)"
+   ],
+   "strength": "unverified"
+  },
+  {
+   "id": "wifi.android.throttle",
+   "text": "Android limits a foreground app to 4 Wi-Fi scans per 2 minutes. For a 'live' meter on the site tablets, turn off Wi-Fi scan throttling in Developer options (Google Workspace can't set it), or the chart updates only every 30 s.",
+   "sources": [
+    "https://developer.android.com/develop/connectivity/wifi/wifi-scan"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "wifi.scan.fields",
+   "text": "A passive scan gives BSSID, SSID, frequency, RSSI and (Android ScanResult / nmcli / CoreWLAN) channel width and centre frequency. Use centre + width, not primary channel, when testing overlap, or 40/80 MHz neighbours look narrower than they are.",
+   "sources": [
+    "https://developer.android.com/develop/connectivity/wifi/wifi-scan"
+   ],
+   "strength": "strong"
+  }
+ ],
+ "zigbee": [
+  {
+   "id": "zb.c4.channels",
+   "text": "Control4: pick 15, 20 or 25 deliberately; never leave the default. These sit between Wi-Fi 1, 6 and 11.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest",
+    "https://www.control4.com/docs/product/zigbee/infographic/english/latest"
+   ],
+   "strength": "strong",
+   "rule": {
+    "preferred": [
+     15,
+     20,
+     25
+    ]
+   }
+  },
+  {
+   "id": "zb.c4.once",
+   "text": "Control4's mesh picks the least-used channel once, at mesh creation, and never re-checks. So a scan at handover and on service visits is the only check.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zb.overlap.math",
+   "text": "Overlap test: Zigbee centre 2405+5(k-11) MHz; Wi-Fi 20 MHz ch n spans (2407+5n) +-11 MHz. With that: Wi-Fi 1 hits Zigbee 11-14, Wi-Fi 6 hits 16-19, Wi-Fi 11 hits 21-24, Wi-Fi 13 hits 22-26. 15, 20, 25 are clear of 1/6/11; 25 is lost if anyone uses Wi-Fi 12 or 13.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zb.pick.algorithm",
+   "text": "Zigbee pick: score each of 15, 20, 25 (and 11-26 for Thread) as the sum of weight(rssi) for every Wi-Fi BSS whose span covers the channel centre +-1 MHz, plus measured 802.15.4 energy if a probe is present. Prefer 15/20/25 in that score order. Explain the pick in words, e.g. 'Zigbee 20: no Wi-Fi above -85 dBm overlaps it.'",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "zb.ap.distance",
+   "text": "Keep every Wi-Fi AP or router at least 5 m (15 ft) from the Control4 mesh controller. A nearby AP can block Zigbee even on a channel far away (receiver overload).",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest",
+    "https://www.control4.com/docs/product/zigbee/infographic/english/latest",
+    "https://help.snapone.com/araknis-help/Content/BP-WiFi/Channel%20Optimization.htm"
+   ],
+   "strength": "strong",
+   "rule": {
+    "min_ap_distance_m": 5
+   }
+  },
+  {
+   "id": "zb.no_rack",
+   "text": "Never put the mesh controller in a rack; use a secondary controller centrally, or the C4-AK-3M 3 m antenna kit.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest",
+    "https://www.control4.com/docs/product/zigbee/infographic/english/latest"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zb.mesh.size",
+   "text": "Max 70 nodes per Control4 mesh; add mesh controllers beyond that. Plan 5-9 m between Zigbee devices.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "strong",
+   "rule": {
+    "max_nodes": 70,
+    "device_spacing_m": [
+     5,
+     9
+    ]
+   }
+  },
+  {
+   "id": "zb.no_wifi_on_controller",
+   "text": "Never use Wi-Fi on a Control4 mesh controller; wire it.",
+   "sources": [
+    "https://www.control4.com/docs/product/zigbee/infographic/english/latest"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zb.other_meshes",
+   "text": "Other 802.15.4 networks share these channels: Philips Hue (defaults 11/15/20/25), Thread (Apple, Google, Matter), Lutron Clear Connect Type X, IKEA, Hive. Only a 802.15.4 energy scan sees them; a Wi-Fi scan can't. If the Hue bridge is on the same channel as Control4, move Hue.",
+   "sources": [
+    "https://community.homey.app/t/understanding-thread-zigbee-and-wi-fi-channels-and-how-to-avoid-common-mistakes/157859",
+    "https://www.home-assistant.io/integrations/thread/",
+    "https://assets.lutron.com/a/documents/clear_connect_technology_whitepaper.pdf"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zb.thread",
+   "text": "Thread uses channels 11-26 like Zigbee. Apple and Google pick the Thread channel themselves; Home Assistant users can set it. Use the same Wi-Fi-clear rule (15/20/25) and keep Thread off the Control4 channel.",
+   "sources": [
+    "https://www.home-assistant.io/integrations/thread/",
+    "https://community.homey.app/t/understanding-thread-zigbee-and-wi-fi-channels-and-how-to-avoid-common-mistakes/157859"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zb.interferers",
+   "text": "Non-Wi-Fi 2.4 GHz sources: Bluetooth (hops all band), microwave ovens (strongest around 2450-2460 MHz, Zigbee 19-21), analogue baby monitors and AV senders, wireless speakers. UK DECT phones are 1880-1900 MHz and don't affect Zigbee (the US 5.8 GHz/DECT 6.0 tip doesn't apply).",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zb.survey",
+   "text": "Control4 recommends a 24 hour 2.4 GHz spectrum scan (they name MetaGeek Wi-Spy) where interference is suspected.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "strong"
+  }
+ ],
+ "rf": [
+  {
+   "id": "rf.disc.bond",
+   "text": "Bond Bridge: mDNS _bond._tcp (TXT carries version). HTTP GET /v2/sys/version needs no token: returns target, fw_ver, fw_date, make, model, uptime_s. Everything else needs the BOND-Token header (from /v2/token within 10 min of a power cycle). Some APs drop the mDNS reply; a power cycle often makes it appear. See disc.bond for DHCP/OUI matching.",
+   "sources": [
+    "https://bond-api-docs.s3.amazonaws.com/feat-weather-devices-other-bridges-local.html",
+    "https://forum.bondhome.io/t/discovery-procedure/1228",
+    "https://www.home-assistant.io/integrations/bond/"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": "_bond._tcp",
+    "http": "/v2/sys/version",
+    "port": 80
+   }
+  },
+  {
+   "id": "rf.disc.tahoma",
+   "text": "Somfy TaHoma / Connexoon: see disc.tahoma (newer, from the Home Assistant manifest). _kizbox._tcp always; the local API on 8443 (_kizboxdev._tcp) appears only after Developer Mode is on.",
+   "sources": [
+    "https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode",
+    "https://www.home-assistant.io/integrations/overkiz"
+   ],
+   "strength": "medium",
+   "discover": {
+    "mdns": "_kizbox._tcp",
+    "port": 8443
+   }
+  },
+  {
+   "id": "rf.disc.mylink",
+   "text": "Somfy myLink (RTS to Wi-Fi): JSON-RPC on TCP 44100 with the system ID set in the myLink app. No reliable mDNS name; identify by OUI/hostname and a TCP 44100 probe.",
+   "sources": [
+    "Integration docs (Home Assistant somfy_mylink) - port not re-read in this research"
+   ],
+   "strength": "unverified",
+   "discover": {
+    "tcp": 44100
+   }
+  },
+  {
+   "id": "rf.disc.lutron",
+   "text": "Lutron RA2 Select / RA3 / Caseta processors: mDNS _lutron._tcp; LEAP on TCP 8081 (TLS). RA2 main repeater: Telnet 23. See disc.lutron for TXT keys; pairing is on 8083.",
+   "sources": [
+    "Home Assistant lutron_caseta / lutron integrations (not re-read here)"
+   ],
+   "strength": "medium",
+   "discover": {
+    "mdns": "_lutron._tcp",
+    "tcp": [
+     8081,
+     23
+    ]
+   }
+  },
+  {
+   "id": "rf.disc.hue",
+   "text": "Philips Hue bridge: mDNS _hue._tcp; GET /api/config without a key gives name, bridgeid, swversion (no Zigbee channel without a key).",
+   "sources": [
+    "Philips Hue developer docs (not re-read here)"
+   ],
+   "strength": "medium",
+   "discover": {
+    "mdns": "_hue._tcp",
+    "http": "/api/config"
+   }
+  },
+  {
+   "id": "rf.disc.others",
+   "text": "Also look for: Shelly (_shelly._tcp, Gen2+ /rpc/Shelly.GetDeviceInfo), Thread border routers (_meshcop._udp), Matter (_matter._tcp), HomeKit (_hap._tcp), Control4 (SDDP UDP 1902, already in the scanner).",
+   "sources": [
+    "https://www.home-assistant.io/integrations/thread/"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "rf.rts.range",
+   "text": "Somfy RTS (433.42 MHz, one-way): Somfy quotes up to 65 ft (about 20 m), omnidirectional, through walls. Treat 20 m with no more than two internal walls as the design limit; metal blinds, foil-backed plasterboard, concrete and steel lintels shorten it a lot.",
+   "sources": [
+    "https://www.somfysystems.com/en-us/discover-somfy/technology/radio-technology-somfy",
+    "https://www.somfy.co.uk/about-somfy/technologies-and-compatibilities"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "rf.rts.oneway",
+   "text": "RTS has no feedback: a missed command looks like a stuck blind. Any blind that fails the probe test needs a bridge/transmitter moved, an extra RTS transmitter, or a wired/io option.",
+   "sources": [
+    "https://www.somfysystems.com/en-us/discover-somfy/technology/radio-technology-somfy"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "rf.bond.place",
+   "text": "Bond Bridge: place centrally, high, out of racks and metal boxes, with line of sight to as many motors as practical. One Bond covers a typical floor; add a second Bond (Bond Pro or extra bridge) per floor when the probe shows marginal results.",
+   "sources": [
+    "https://www.home-assistant.io/integrations/bond/"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "rf.lutron.range",
+   "text": "Lutron Clear Connect Type A: every device within 30 ft (9 m) of the hub or a repeater; repeaters within 60 ft (18 m) of each other. Never in a metal enclosure. Grounded metal back boxes, metal plates, ductwork and fridges cause problems.",
+   "sources": [
+    "https://support.lutron.com/us/en/product/casetawireless/article/did-you-know/How-to-extend-the-RF-range-of-the-Caseta-Bridge",
+    "https://assets.lutron.com/a/documents/clear_connect_technology_whitepaper.pdf"
+   ],
+   "strength": "strong",
+   "rule": {
+    "device_to_repeater_m": 9,
+    "repeater_to_repeater_m": 18
+   }
+  },
+  {
+   "id": "rf.lutron.uk_band",
+   "text": "UK/EU Lutron systems use the 868 MHz band, not 434 MHz (US). A 433 MHz probe will not measure them; read the frequency on the model label.",
+   "sources": [
+    "https://assets.lutron.com/a/documents/clear_connect_technology_whitepaper.pdf",
+    "https://assets.lutron.com/a/documents/3686138_RadioRA3_Domestic_Architecture.pdf"
+   ],
+   "strength": "unverified"
+  },
+  {
+   "id": "rf.cc1101.rssi_formula",
+   "text": "CC1101 RSSI to dBm: read RSSI register as a byte; if >= 128, dBm = (byte-256)/2 - offset, else dBm = byte/2 - offset. Offset is about 74 dB at 433 MHz (datasheet table). Absolute accuracy is only a few dB; relative readings on the same unit are good.",
+   "sources": [
+    "https://www.ti.com/lit/gpn/CC1101",
+    "https://ti.com/lit/pdf/swra114"
+   ],
+   "strength": "strong",
+   "rule": {
+    "rssi_offset_db_433": 74
+   }
+  },
+  {
+   "id": "rf.cc1101.sensitivity",
+   "text": "CC1101 sensitivity: -116 dBm at 0.6 kBaud, 433 MHz. Bands 300-348, 387-464, 779-928 MHz. In homes the real noise floor at 433 MHz with a 100 kHz RX filter is usually -100 to -105 dBm; measure it on each site rather than assume.",
+   "sources": [
+    "https://www.ti.com/product/CC1101"
+   ],
+   "strength": "medium",
+   "rule": {
+    "sensitivity_dbm": -116,
+    "typical_floor_dbm": [
+     -105,
+     -100
+    ]
+   }
+  },
+  {
+   "id": "rf.probe.grades",
+   "text": "433 MHz probe grades (measured RSSI of real RTS/Bond frames at the blind, plus margin over the measured floor): solid = at least -80 dBm and 20 dB over the floor; marginal = -80 to -95 dBm or 10-20 dB margin; fail = below -95 dBm or under 10 dB margin. Grade on the worse of the two. Show the margin, because cheap modules differ in absolute dBm.",
+   "sources": [
+    "https://www.ti.com/product/CC1101",
+    "https://github.com/rstrouse/ESPSomfy-RTS/wiki/Simple-ESPSomfy-RTS-device"
+   ],
+   "strength": "heuristic",
+   "rule": {
+    "solid": {
+     "min_dbm": -80,
+     "min_margin_db": 20
+    },
+    "marginal": {
+     "min_dbm": -95,
+     "min_margin_db": 10
+    }
+   }
+  },
+  {
+   "id": "rf.probe.interference",
+   "text": "At 433 MHz the usual interferers are car key fobs, weather stations, doorbells, alarm sensors and other 433.92 MHz gadgets, plus noise from LED drivers and switch-mode PSUs near motors. Sample the floor for 60 s and flag anything more than 10 dB above the median.",
+   "sources": [
+    "https://github.com/rstrouse/ESPSomfy-RTS"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "rf.probe.chip",
+   "text": "Radio for the portable probe: CC1101 (TI) on an ESP32. Use the E07-M1101D-SMA module (SMA, 433 MHz matched) with a quarter-wave 17 cm whip; ESPSomfy-RTS found cheap blue boards can have under 15 ft range. Not RXB6 (no RSSI output, receive only). SX1278/Ra-02 also gives RSSI in OOK mode (RadioLib) but most ESPSomfy-style RTS code expects CC1101.",
+   "sources": [
+    "https://github.com/rstrouse/ESPSomfy-RTS/wiki/Simple-ESPSomfy-RTS-device",
+    "https://github.com/rstrouse/ESPSomfy-RTS",
+    "https://www.ti.com/product/CC1101",
+    "https://github.com/jgromes/RadioLib"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "rf.probe.libs",
+   "text": "Libraries: SmartRC-CC1101-Driver-Lib (used by ESPSomfy-RTS, has getRssi) or RadioLib (CC1101 and SX127x, getRSSI). ESPSomfy-RTS already decodes RTS frames, so the probe can show RSSI per Somfy remote/address, not just raw carrier.",
+   "sources": [
+    "https://reference.arduino.cc/reference/en/libraries/smartrc-cc1101-driver-lib",
+    "https://github.com/jgromes/RadioLib",
+    "https://github.com/rstrouse/ESPSomfy-RTS"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "rf.probe.868",
+   "text": "For io-homecontrol, Velux io and UK Lutron (868 MHz) the same CC1101 chip works, but buy the 868 MHz matched module and antenna; one module can't serve both bands well.",
+   "sources": [
+    "https://www.ti.com/product/CC1101"
+   ],
+   "strength": "medium"
+  }
+ ],
+ "hardware": [
+  {
+   "id": "hw.esp32c6",
+   "text": "ESP32-C6 (about £8-15 dev board): Wi-Fi 6 2.4 GHz + 802.15.4 + BLE. Call esp_ieee802154_energy_detect(duration in 16 us symbols) per channel 11-26; result arrives in esp_ieee802154_energy_detect_done(int8 dBm). The ieee802154_cli example has 'ed -d <symbols>'. Best cheap way to add a real Zigbee/Thread energy bar to the chart. ESP32-H2 does 802.15.4 + BLE only (no Wi-Fi), fine as a USB dongle on the Pi.",
+   "sources": [
+    "https://sourcevu.sysprogs.com/espressif/esp-idf/files/components/ieee802154/include/esp_ieee802154.h",
+    "https://sourcevu.sysprogs.com/espressif/examples/ieee802154/ieee802154_cli/files/components/cmd_ieee802154/ieee802154_cmd.c"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "hw.zb_dongle",
+   "text": "Alternative: Sonoff ZBDongle-P/E or similar on the Site Rig Pi; zigpy/ZHA 'energy scan' gives per-channel energy 11-26 without custom firmware.",
+   "sources": [
+    "Home Assistant ZHA docs (not re-read here)"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "hw.rtlsdr",
+   "text": "RTL-SDR V3/V4 (about £30-40): good for 433/868 MHz on the Pi (rtl_power waterfall). It can't reach 2.4 GHz (tuner tops out around 1.7-1.8 GHz).",
+   "sources": [
+    "https://www.rtl-sdr.com/rtl-sdr-quick-start-guide/"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "hw.hackrf",
+   "text": "HackRF One (about £300+): 1 MHz-6 GHz, hackrf_sweep outputs CSV rows of dB per bin, fast enough for a live 2.4 and 5 GHz waterfall on a Pi 5. Not calibrated; good for shapes (microwave, video sender), not exact dBm. Misses most of 6 GHz Wi-Fi.",
+   "sources": [
+    "https://hackrf.readthedocs.io/en/latest/hackrf_tools.html",
+    "https://hackrf.readthedocs.io/en/latest/hackrf_one.html"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "hw.tinysa",
+   "text": "tinySA Ultra (about £120-150): handheld 100 kHz-5.3 GHz analyser with USB serial control; can be scripted from the Pi for 433/868/2.4 GHz. Middle ground between RTL-SDR and HackRF.",
+   "sources": [
+    "tinysa.org (not re-read here)"
+   ],
+   "strength": "unverified"
+  },
+  {
+   "id": "hw.wispy",
+   "text": "Wi-Spy Lucid: $999, 2.2-7.25 GHz, covers 2.4/5/6 GHz, Chanalyzer runs on Windows and macOS only (not Pi or Android). The tool Control4 names. Worth one for the office kit, not for every van.",
+   "sources": [
+    "https://www.oscium.com/products/wi-spy-lucid/",
+    "https://www.metageek.com/blog/wi-spy-is-back",
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "hw.recommend",
+   "text": "Recommended stack: (1) Wi-Fi scan from the tablet/laptop for SSIDs and channels (free, now); (2) ESP32-C6 probe for Zigbee/Thread energy (cheap, high value); (3) CC1101 433 MHz probe for RTS/Bond (cheap, high value); (4) RTL-SDR on the Site Rig for sub-GHz waterfall; (5) HackRF or Wi-Spy only for problem sites.",
+   "sources": [],
+   "strength": "heuristic"
+  }
+ ],
+ "presentation": [
+  {
+   "id": "ui.parabola",
+   "text": "Spectrum chart: one curve per BSS spanning its true width (centre +- width/2), height = RSSI, our SSIDs highlighted, neighbours grey. This is the familiar Wi-Fi Analyzer look engineers expect.",
+   "sources": [
+    "https://www.netspotapp.com/wifi-channel-scanner/wifi-channel-width.html"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "ui.zigbee_overlay",
+   "text": "Overlay Zigbee 11-26 as thin 2 MHz bars on the 2.4 GHz axis, the Control4 mesh channel in brand colour, with ESP32-C6 energy (if present) as bar height.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "ui.time_graph",
+   "text": "Add a time graph (RSSI per BSS over the last few minutes) and, when a probe/SDR is connected, a waterfall. Waterfalls show non-Wi-Fi sources (microwave, video senders) that a scan can't.",
+   "sources": [
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest",
+    "https://www.oscium.com/products/wi-spy-lucid/"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "ui.advice",
+   "text": "Show advice as plain sentences with a reason and a grade, e.g. 'Move 2.4 GHz to 11: channel 6 has 4 neighbours above -75 dBm.' Never just stars. Show the top 3 options so the engineer can choose.",
+   "sources": [
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "heuristic"
+  },
+  {
+   "id": "ui.thresholds",
+   "text": "Colour lines on the chart at -67 dBm (AV minimum) and -82 dBm (contention threshold).",
+   "sources": [
+    "https://docs.sophos.com/nsg/wifi/help/en-us/GettingStarted/ChannelSelectionGuide/index.html"
+   ],
+   "strength": "heuristic"
+  }
+ ],
+ "zigbee_meter": [
+  {
+   "id": "zbm.hw.choice",
+   "text": "Probe chip: ESP32-C6 is fine if it sweeps 802.15.4 while its Wi-Fi is idle (connected but not scanning). Espressif rates Wi-Fi scanning alongside Zigbee/Thread scanning as 'supported but unstable', and 802.15.4 receive has the lowest priority on the shared 2.4 GHz radio. For an always-listening node meter, ESP32-H2 (802.15.4 + BLE, no Wi-Fi) or a C6/S3 + H2 pair is cleaner. Rule for the firmware: never run a Wi-Fi scan during a Zigbee sweep or listen window.",
+   "sources": [
+    "https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-guides/coexist.html"
+   ],
+   "strength": "strong",
+   "rule": {
+    "no_wifi_scan_during_154": true
+   }
+  },
+  {
+   "id": "zbm.hw.compare",
+   "text": "Alternatives: nRF52840 dongle (about £10-15, Nordic sniffer + Wireshark extcap, per-packet power in dBm, good for deep capture in the office). Silicon Labs EFR32 dongles (ZBDongle-E): energy scan maxRssiValue in dBm. TI CC2652 (ZBDongle-P) via zigpy: energy scan is a percentage, not dBm, so don't mix it with dBm grades. Keep the ESP32 probe as the site tool; it shares the Remotes/RF probe firmware pattern.",
+   "sources": [
+    "https://github.com/NordicSemiconductor/nRF-Sniffer-for-802.15.4",
+    "https://docs.silabs.com/d/zigbee-stack-api/7.3.0/network-formation",
+    "https://github.com/zigpy/zigpy-cli"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zbm.api.rx",
+   "text": "ESP-IDF receive: esp_ieee802154_receive_done(uint8_t *frame, esp_ieee802154_frame_info_t *info). frame[0] is the PSDU length; the FCS bytes are replaced by RSSI and LQI. info has channel, rssi (int8 dBm), lqi, pending, timestamp. You MUST call esp_ieee802154_receive_handle_done(frame) after copying (required since IDF 5.1.3) or the driver runs out of buffers and RX stops. Callbacks run in ISR context: copy into a queue, parse in a task.",
+   "sources": [
+    "https://raw.githubusercontent.com/espressif/esp-idf/master/components/ieee802154/include/esp_ieee802154.h",
+    "https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32c6/migration-guides/release-5.x/5.2/ieee802154.html",
+    "https://raw.githubusercontent.com/espressif/esp-idf/master/examples/ieee802154/ieee802154_cli/components/cmd_ieee802154/ieee802154_cmd.c"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zbm.api.ed",
+   "text": "Energy detect: esp_ieee802154_energy_detect(duration) takes 16 us symbols (e.g. 500 = 8 ms); the result comes in esp_ieee802154_energy_detect_done(int8_t dBm). Set the channel with esp_ieee802154_set_channel(11-26) before each call. Take several samples per channel and report max and median; a single 8 ms window misses bursty Wi-Fi.",
+   "sources": [
+    "https://raw.githubusercontent.com/espressif/esp-idf/master/components/ieee802154/include/esp_ieee802154.h",
+    "https://raw.githubusercontent.com/espressif/esp-idf/master/examples/ieee802154/ieee802154_cli/components/cmd_ieee802154/ieee802154_cmd.c"
+   ],
+   "strength": "strong",
+   "rule": {
+    "ed_symbols_default": 500,
+    "samples_per_channel": 8
+   }
+  },
+  {
+   "id": "zbm.api.promisc",
+   "text": "Node meter: esp_ieee802154_set_promiscuous(true) + esp_ieee802154_set_rx_when_idle(true) on the mesh channel, then group frames by source address (short + PAN ID; extended address when present) and keep last/avg RSSI and LQI per node.",
+   "sources": [
+    "https://raw.githubusercontent.com/espressif/esp-idf/master/components/ieee802154/include/esp_ieee802154.h"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zbm.beacon.request",
+   "text": "Beacon request: bytes 03 08 <seq> FF FF FF FF 07 (FC 0x0803 MAC command, dst PAN 0xFFFF, dst addr 0xFFFF, cmd 0x07), sent with esp_ieee802154_transmit(frame, false). Listen about 200-300 ms per channel for beacons (FC low 3 bits = 0). The build's format is correct.",
+   "sources": [
+    "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/158/11.7.2016-when-waveshare-end-device-attached.txt"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zbm.beacon.payload",
+   "text": "Zigbee beacon payload (protocol ID 0x00): stack profile (2 = Zigbee PRO), protocol version, router capacity, device depth, end-device capacity, 8-byte extended PAN ID, tx offset, nwkUpdateId. Permit-join = bit 15 of the superframe spec (0xCFFF yes, 0x4FFF no). Show 'joining open' as a warning: someone left permit-join on.",
+   "sources": [
+    "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/158/11.7.2016-when-waveshare-end-device-attached.txt",
+    "https://www.nsnam.org/doxygen/d2/d53/classns3_1_1zigbee_1_1_zigbee_beacon_payload.html"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "zbm.beacon.thread",
+   "text": "Thread: routers do answer a beacon request, but since Thread 1.2.1 the beacon has no payload (no network name, no ext PAN). Classify a beacon with no Zigbee payload as 'Thread / other 802.15.4', keep its 16-bit PAN ID, and name it from the LAN (_meshcop._udp TXT nn = network name, xp = ext PAN ID). Thread is also visible passively from MLE Advertisements (about every 30 s) on its channel.",
+   "sources": [
+    "https://openthread.io/reference/config/group/config-mac",
+    "https://openthread.io/guides/thread-primer/network-discovery",
+    "https://www.home-assistant.io/integrations/thread/"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zbm.beacon.coverage",
+   "text": "What an active beacon scan finds: Zigbee coordinators and routers that allow beacons (Control4, Hue, IKEA, Aqara, SmartThings, neo if it is Zigbee) - yes, from routers in earshot. End-devices never answer. Lutron Clear Connect Type X is Thread-based (standard 802.15.4 + 6LoWPAN), so it shows as Thread. Sleepy-only networks or a hub out of range show nothing: say 'not heard here', not 'not present'.",
+   "sources": [
+    "https://www.nsnam.org/doxygen/d2/d53/classns3_1_1zigbee_1_1_zigbee_beacon_payload.html",
+    "https://edz.art/lab-notes/ccx-nrf52840/",
+    "https://openthread.io/guides/thread-primer/network-discovery"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zbm.oui.labels",
+   "text": "Labelling meshes by ext PAN ID OUI is a hint only: no source confirms Control4 or Hue use the coordinator EUI-64 as the ext PAN ID. Known OUIs: Control4 00:0F:FF, Philips/Signify 00:17:88 (confirmed as MAC OUIs). Also check the beacon's source extended address (if long-addressed) and the router addresses heard in promiscuous mode. Best label = channel match with a hub found on the LAN (zbm.lan.*). Show 'probably Control4' unless two signals agree.",
+   "sources": [
+    "https://maclookup.app/macaddress/000fff",
+    "https://maclookup.app/macaddress/001788"
+   ],
+   "strength": "medium",
+   "rule": {
+    "oui": {
+     "000FFF": "Control4",
+     "001788": "Philips Hue"
+    }
+   }
+  },
+  {
+   "id": "zbm.oui.heatmiser",
+   "text": "Heatmiser: no Heatmiser IEEE OUI or Zigbee address capture was found. Its docs never say 'Zigbee' (they say 'Mesh'), though the Home Assistant integration exposes a 'ZigBee Channel' and the API has SET_CHANNEL. Don't hard-code a Heatmiser OUI; identify neo meshes by matching the channel read from the neoHub API.",
+   "sources": [
+    "https://www.heatmiser.com/heatmiser-neo-faq/",
+    "https://mindrustuk.github.io/Heatmiser-for-home-assistant/hub.html",
+    "https://gist.github.com/mikepallister/0c8b73a6231cd58ead42b0b51b5d06f7"
+   ],
+   "strength": "unverified"
+  },
+  {
+   "id": "zbm.lan.hue",
+   "text": "Hue channel with no probe: CLIP v1 GET /api/<appkey>/config -> zigbeechannel (11/15/20/25, 0 = not set); CLIP v2 /clip/v2/resource/zigbee_connectivity -> channel.value 'channel_NN'. Needs an app key (press the bridge button once; store the key in the project's Network Map record so nobody types it again). The keyless /api/config probably doesn't include it. The channel can be changed with PUT config {zigbeechannel:N}.",
+   "sources": [
+    "https://docs.rs/crate/huelib/latest/source/src/resource/config.rs",
+    "https://docs.rs/crate/hues/latest/source/src/service/zigbee.rs",
+    "https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/configuration",
+    "https://github.com/home-assistant-libs/aiohue"
+   ],
+   "strength": "medium",
+   "discover": {
+    "http_auth": "/api/<key>/config",
+    "field": "zigbeechannel"
+   }
+  },
+  {
+   "id": "zbm.lan.neohub",
+   "text": "neoHub channel with no probe: Home Assistant's heatmiserneo integration shows a 'ZigBee Channel' diagnostic read from the hub. Most likely from {\"GET_SYSTEM\":0} (field not confirmed). Legacy TCP 4242 needs no token (send JSON + NUL byte); WebSocket 4243 needs the API token made in the Heatmiser app (Settings > System > API Access). New firmware turns 4242 off after 48 h idle unless 'Legacy API Enable' is on. SET_CHANNEL exists to move it.",
+   "sources": [
+    "https://mindrustuk.github.io/Heatmiser-for-home-assistant/hub.html",
+    "https://www.openhab.org/addons/bindings/neohub/",
+    "https://gist.github.com/mikepallister/0c8b73a6231cd58ead42b0b51b5d06f7",
+    "https://github.com/MindrustUK/Heatmiser-for-home-assistant"
+   ],
+   "strength": "medium",
+   "discover": {
+    "tcp": [
+     4242,
+     4243
+    ],
+    "probe": "{\"INFO\":0}\\u0000",
+    "channel_cmd": "{\"GET_SYSTEM\":0}"
+   }
+  },
+  {
+   "id": "zbm.lan.control4",
+   "text": "Control4 Zigbee channel: set and shown only in Composer Pro (Zigbee Channel on the mesh controller). No public LAN API, SDDP field or Director endpoint exposes it. So: probe it (beacon scan) or pick it from a dropdown once and save it in the project's Network Map record; then every app reads it from there.",
+   "sources": [
+    "https://docs.control4.com/help/c4/software/cpro/dealer-composer-help/content/composerpro_userguide/configuring_a_zigbee_mesh_controller.htm",
+    "https://control4.com/docs/product/zigbee/best-practices/english/latest",
+    "https://github.com/sammck/sddp-discovery-protocol"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "zbm.grade.rssi",
+   "text": "Node RSSI grades: Solid >= -75 dBm, Marginal -75 to -85, Poor below -85. This matches Silicon Labs' example of 20 dB margin over a typical -95 dBm receiver (-75) and 10 dB margin (-85); ZHA calls -60 and above strong and -80 and below at risk. The build's draft numbers are good. Grade on RSSI; ignore LQI as a grade (vendors compute it differently).",
+   "sources": [
+    "https://www.silabs.com/documents/public/user-guides/ug103-01-fundamentals-wireless-network.pdf",
+    "https://www.home-assistant.io/integrations/zha/"
+   ],
+   "strength": "medium",
+   "rule": {
+    "solid": -75,
+    "marginal": -85
+   }
+  },
+  {
+   "id": "zbm.grade.energy",
+   "text": "Channel energy grades from ED (dBm, max over samples): clear below -85, busy -85 to -70, bad above -70. Use the median for the background and max for bursts. A Zigbee channel whose median is within 10 dB of the mesh's weakest node RSSI is a failing channel.",
+   "sources": [
+    "https://www.silabs.com/documents/public/user-guides/ug103-01-fundamentals-wireless-network.pdf"
+   ],
+   "strength": "heuristic",
+   "rule": {
+    "clear": -85,
+    "bad": -70,
+    "min_margin_db": 10
+   }
+  },
+  {
+   "id": "zbm.heatmiser.radio",
+   "text": "Heatmiser neo: neoHub Gen3 has two radios, 2.4 GHz (the neoStat mesh) and 868 MHz (neoAir/RF kit). The neoHub mini lists only 868 MHz. Up to 32 devices per hub, about 40 m in open space. Mains-powered neoStats form the mesh; battery neoAir joins but doesn't repeat; neoPlug and Boost repeat both mesh and RF. Advice: at least one mains device or neoPlug per floor, more through thick walls or metal; hub is wired to the router.",
+   "sources": [
+    "https://www.heatmiser.com/download/328/neo-manuals/14777/heatmiser-neohubgen3-manual.pdf",
+    "https://www.heatmiser.com/download/329/neo-datasheets/14776/neohub-gen3-datasheet.pdf",
+    "https://www.heatmiser.com/download/211/english/11479/neohub-mini-hw-datasheet.pdf",
+    "https://www.heatmiser.com/heatmiser-neo-faq/",
+    "https://faq.heatmiser.com/hc/en-us/articles/360001740139-10-Neo-System-Tips"
+   ],
+   "strength": "medium",
+   "rule": {
+    "max_devices": 32,
+    "open_range_m": 40
+   }
+  },
+  {
+   "id": "zbm.auto.flow",
+   "text": "No-typing flow: (1) LAN scan finds hubs (Control4 SDDP/SSDP, Hue, neoHub, Dirigera, TaHoma, Bond, Lutron, Thread BRs). (2) Read channels over the LAN where possible (Hue with key, neoHub). (3) Probe beacon-scans 11-26 and lists meshes. (4) Auto-match mesh to hub by channel + OUI; only ask (dropdown, pre-filled) when two meshes share a channel or nothing matches. (5) Saved answers go into the project's Network Map record so Remotes, Scanner and Site Rig read the same data.",
+   "sources": [],
+   "strength": "heuristic"
+  }
+ ],
+ "discovery": [
+  {
+   "id": "disc.lutron",
+   "text": "Lutron: mDNS _lutron._tcp. TXT SYSTYPE (HA matches smartbridge*, ra2select*, radiora3*, hwqs*, athena*), DEVCLASS (RA3 081B0101, Caseta SB 08040100, SB Pro 08050100, RA2 Select 080E0401), CODEVER, MACADDR. LEAP TLS on 8081, pairing on 8083. Hostname lutron-<serial>.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py",
+    "https://github.com/gurumitts/pylutron-caseta",
+    "https://github.com/openhab/openhab-addons"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": "_lutron._tcp",
+    "tcp": [
+     8081,
+     8083
+    ]
+   }
+  },
+  {
+   "id": "disc.hue",
+   "text": "Hue: mDNS _hue._tcp (port 443, TXT bridgeid, modelid e.g. BSB002). Keyless GET http://<ip>/api/config gives name, bridgeid, swversion.",
+   "sources": [
+    "https://github.com/home-assistant-libs/aiohue",
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": "_hue._tcp",
+    "http": "/api/config"
+   }
+  },
+  {
+   "id": "disc.dirigera",
+   "text": "IKEA Dirigera: mDNS _ihsp._tcp; local HTTPS API on 8443 (token by pairing button).",
+   "sources": [
+    "https://github.com/lpgera/dirigera",
+    "https://0x5d.pages.dev/posts/ikeadirigera"
+   ],
+   "strength": "medium",
+   "discover": {
+    "mdns": "_ihsp._tcp",
+    "tcp": [
+     8443
+    ]
+   }
+  },
+  {
+   "id": "disc.aqara",
+   "text": "Aqara M2/M3: no confirmed Aqara mDNS type. Expect _hap._tcp (HomeKit) and Matter (_matter._tcp); old gateways _miio._udp. Identify by hostname/OUI.",
+   "sources": [],
+   "strength": "unverified"
+  },
+  {
+   "id": "disc.smartthings",
+   "text": "SmartThings hub: Home Assistant matches by DHCP hostname (st*, smartthings*, hub*, smarthub) and MAC OUIs 24:FD:5B, D0:52:A8, 28:6D:97, 68:3A:48.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/components/smartthings/manifest.json"
+   ],
+   "strength": "medium",
+   "discover": {
+    "oui": [
+     "24FD5B",
+     "D052A8",
+     "286D97",
+     "683A48"
+    ]
+   }
+  },
+  {
+   "id": "disc.tahoma",
+   "text": "Somfy TaHoma/Connexoon: _kizbox._tcp (443) always; _kizboxdev._tcp on 8443 only when Developer Mode is on. Name gateway-*, TXT gateway_pin, api_version, fw_version. MAC OUI F8:81:1A. Replaces the port detail in rf.disc.tahoma.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/components/overkiz/manifest.json",
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": [
+     "_kizbox._tcp",
+     "_kizboxdev._tcp"
+    ],
+    "oui": [
+     "F8811A"
+    ]
+   }
+  },
+  {
+   "id": "disc.bond",
+   "text": "Bond: _bond._tcp, service name starts with the Bond ID; DHCP hostname bond-*; MAC OUIs 3C:6A:2C and F4:4E:38. GET /v2/sys/version needs no token.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/components/bond/manifest.json",
+    "https://bond-api-docs.s3.amazonaws.com/feat-weather-devices-other-bridges-local.html"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": "_bond._tcp",
+    "oui": [
+     "3C6A2C",
+     "F44E38"
+    ]
+   }
+  },
+  {
+   "id": "disc.neohub",
+   "text": "Heatmiser neoHub: _hap._tcp named 'heatmiser neohub*'; UDP broadcast 'hubseek' to port 19790, reply hubseek{\"ip\":...,\"device_id\":mac}; TCP 4242 (legacy, no token) and 4243 (WebSocket, token). The build's 4242/4243 detection is right; add the hubseek broadcast so it's found even when 4242 is off.",
+   "sources": [
+    "https://github.com/MindrustUK/Heatmiser-for-home-assistant",
+    "https://www.openhab.org/addons/bindings/neohub/"
+   ],
+   "strength": "medium",
+   "discover": {
+    "udp_broadcast": {
+     "port": 19790,
+     "payload": "hubseek"
+    },
+    "tcp": [
+     4242,
+     4243
+    ]
+   }
+  },
+  {
+   "id": "disc.control4",
+   "text": "Control4: SDDP NOTIFY ALIVE to 239.255.255.250 UDP 1902 (headers Type, Primary-Proxy, Manufacturer, Model, Driver); Home Assistant also finds Directors by SSDP ST c4:director. Controller/ZAP Type strings are not documented publicly; log what sites send.",
+   "sources": [
+    "https://github.com/sammck/sddp-discovery-protocol",
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/ssdp.py"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "disc.shelly",
+   "text": "Shelly: Gen1 _http._tcp named shelly*; Gen2+ _shelly._tcp; keyless GET /shelly returns model and gen.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py"
+   ],
+   "strength": "medium",
+   "discover": {
+    "mdns": [
+     "_shelly._tcp",
+     "_http._tcp"
+    ],
+    "http": "/shelly"
+   }
+  },
+  {
+   "id": "disc.thread",
+   "text": "Thread border routers: _meshcop._udp TXT nn (network name), xp (ext PAN ID), xa, tv, vn (vendor), mn (model), sb, at, id. Use vn/mn to say 'Apple', 'Google', 'Lutron', 'Aqara' etc. Matter: _matter._tcp (running) and _matterc._udp (waiting to be added).",
+   "sources": [
+    "https://www.home-assistant.io/integrations/thread/",
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py"
+   ],
+   "strength": "strong",
+   "discover": {
+    "mdns": [
+     "_meshcop._udp",
+     "_matter._tcp",
+     "_matterc._udp"
+    ]
+   }
+  },
+  {
+   "id": "disc.sonos",
+   "text": "Sonos: _sonos._tcp (1443, TXT info, vers), SSDP urn:schemas-upnp-org:device:ZonePlayer:1.",
+   "sources": [
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/zeroconf.py",
+    "https://github.com/home-assistant/core/blob/dev/homeassistant/generated/ssdp.py"
+   ],
+   "strength": "strong"
+  }
+ ],
+ "subghz_tools": [
+  {
+   "id": "sg.rtl433.somfy",
+   "text": "rtl_433 decodes Somfy RTS (protocol 167) and io-homecontrol (189). Each event has id = remote address, control = button, counter = rolling code. So it can auto-name 'Somfy remote 1A2B3C pressed Up' with no typing. Tune the SDR so 433.42 MHz is in the passband (e.g. -f 433.42M).",
+   "sources": [
+    "https://github.com/merbanan/rtl_433",
+    "https://raw.githubusercontent.com/merbanan/rtl_433/master/src/devices/somfy_rts.c"
+   ],
+   "strength": "strong"
+  },
+  {
+   "id": "sg.rtl433.levels",
+   "text": "rtl_433 -M level adds RSSI, SNR and noise to every event. -F http serves http://<pi>:8433 with /events (chunked JSON stream) and a WebSocket; -F mqtt also works. The scanner page can read the Site Rig's stream directly.",
+   "sources": [
+    "https://github.com/merbanan/rtl_433",
+    "https://raw.githubusercontent.com/merbanan/rtl_433/master/src/http_server.c"
+   ],
+   "strength": "strong",
+   "discover": {
+    "tcp": [
+     8433
+    ],
+    "http": "/events"
+   }
+  },
+  {
+   "id": "sg.probe.rtl433esp",
+   "text": "Portable probe firmware: rtl_433_ESP (ESP32 + CC1101) decodes Somfy RTS as protocol 178 (match by name, not number), tracks noise floor and per-message RSSI, one frequency and one modulation per build, fewer decoders and roughly half the range of an RTL-SDR. OpenMQTTGateway wraps it and reports rssi, currentRssi and rssiThreshold, and can retune live.",
+   "sources": [
+    "https://github.com/NorthernMan54/rtl_433_ESP",
+    "https://docs.openmqttgateway.com/use/rf"
+   ],
+   "strength": "medium"
+  },
+  {
+   "id": "sg.recommend",
+   "text": "Use both. Site Rig Pi + RTL-SDR V4 + rtl_433: the fixed 'ear' that names every remote and logs level/SNR at the rig. ESP32 + CC1101 probe with rtl_433_ESP decode + RSSI: carried to the blind so the reading is taken where the motor's receiver is. The probe's grade (rf.probe.grades) is the pass/fail; the Pi supplies names and the noise picture.",
+   "sources": [
+    "https://github.com/merbanan/rtl_433",
+    "https://github.com/NorthernMan54/rtl_433_ESP"
+   ],
+   "strength": "heuristic"
+  }
+ ]
+}

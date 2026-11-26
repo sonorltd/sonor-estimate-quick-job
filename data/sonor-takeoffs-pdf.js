@@ -60,7 +60,7 @@
   // header History, boot banner and host cache-bust all disagreeing).
   // Bump THIS on every functional change to the module; the banner and
   // window.SonorPdf.__version derive from it.
-  var SONOR_PDF_VERSION = '2.9.0';   // v2.9.0 2026-11-01 — FULL DOCUMENT PAGE NUMBERS FROM THE FINAL COUNT: every HTML page's baked "PAGE n of T" is restamped after assembly when the precount drifted (a slice that came back empty, a dropped section — Demo contents read "Page 2 of 121" in a 117-page file): _trackHtmlPageStamps + _restampHtmlPageNumbers (sonor-pdf-html-cover 1.12.0 pageStamp patch) · Standard plan rasters capped (scale 2.5, JPEG 0.8) ·  v2.8.0 2026-11-01 — house ART cover (scope-cover / -landscape, full bleed, clean-zone type) on the full document + plan exports; frames yield between pages ·  v2.7.0 2026-10-16 — DMX PLAN special page (remote DMX driver loop, variant 'dmx'; servicePlan opts.variant) · v2.6.0 2026-10-16 — merged PROJECT INFORMATION front page, CABLING STANDARDS numbered on its own, TRADES REQUIREMENTS — BUILDER sheet
+  var SONOR_PDF_VERSION = '2.9.1';   // v2.9.1 2026-11-25 — plain revision numbers (nothing issued 0, then 1, 2, 3) ·  v2.9.0 2026-11-01 — FULL DOCUMENT PAGE NUMBERS FROM THE FINAL COUNT: every HTML page's baked "PAGE n of T" is restamped after assembly when the precount drifted (a slice that came back empty, a dropped section — Demo contents read "Page 2 of 121" in a 117-page file): _trackHtmlPageStamps + _restampHtmlPageNumbers (sonor-pdf-html-cover 1.12.0 pageStamp patch) · Standard plan rasters capped (scale 2.5, JPEG 0.8) ·  v2.8.0 2026-11-01 — house ART cover (scope-cover / -landscape, full bleed, clean-zone type) on the full document + plan exports; frames yield between pages ·  v2.7.0 2026-10-16 — DMX PLAN special page (remote DMX driver loop, variant 'dmx'; servicePlan opts.variant) · v2.6.0 2026-10-16 — merged PROJECT INFORMATION front page, CABLING STANDARDS numbered on its own, TRADES REQUIREMENTS — BUILDER sheet
 
 // ============================================================
 // Boot diagnostic — resolved PDF pipeline
@@ -497,7 +497,7 @@ const SonorPdf = (function () {
     // Future enhancement: extend `projects.metadata.takeoff_revision` and
     // `projects.metadata.drawn_by` in Supabase + read those here.
     const drawnBy  = 'Sonor';
-    const revision = '00';   // v5.148.0 (Bryn: "project revisioning should just be simple incremental numbers") — first issue = 00, then 01, 02…
+    const revision = '0';   // v5.283.0 (Bryn 2026-11-12: "version numbering just needs to be 1,2,3") — nothing issued = 0, first issue = 1, then 2, 3… Was 00, 01 since v5.148.0 (Bryn: "project revisioning should just be simple incremental numbers") — first issue = 00, then 01, 02…
 
     // v2.1.0 — wire the title-block "REVISION NOTES" Added/Changed/Removed
     // pills to the live revision-cloud counts. Pre-v2.1.0 these defaulted
@@ -535,10 +535,10 @@ const SonorPdf = (function () {
     try {
       const cache = (typeof window !== 'undefined' && window.__SONOR_TAKEOFF_REVISIONS_CACHE__) || null;
       if (Array.isArray(cache) && cache.length) {
-        // Cache is newest-first; reverse to oldest-first then assign 00, 01…
+        // Cache is newest-first; reverse to oldest-first then number 1, 2, 3… (same number as takeoff_summary and every other app)
         const rows = cache.slice().reverse();
         revisionHistory = rows.map((r, i) => {
-          const code = String(i).padStart(2, '0');
+          const code = String(i + 1);
           let dShort = '—';
           try {
             const d = new Date(r.created_at);
@@ -2414,7 +2414,7 @@ const SonorPdf = (function () {
     // doesn't compete with the title visually but is unmissable on a printed
     // sheet. Pulls from meta.revision (resolved by collectProjectMeta to the
     // most recent cached takeoff_revisions row).
-    if (meta.revision && meta.revision !== 'A0' && meta.revision !== '00') {
+    if (meta.revision && meta.revision !== 'A0' && meta.revision !== '00' && meta.revision !== '0') {
       pdf.setFont(_pdfFontFamily(), 'italic');
       pdf.setFontSize(8.5);
       _setText(pdf, COLOURS.text2);
@@ -3396,7 +3396,7 @@ const SonorPdf = (function () {
     // length-1 if meta.revision wasn't set (matches the numeric scheme
     // used by the revisionHistory mapper above — "00" / "01" / …).
     const fallbackCode = hasRevisions
-      ? String(meta.revisionHistory.length - 1).padStart(2, '0')
+      ? String(meta.revisionHistory.length)
       : '00';
     const fourthCell = hasRevisions
       ? { caption: 'REVISION', value: meta.revision || fallbackCode }

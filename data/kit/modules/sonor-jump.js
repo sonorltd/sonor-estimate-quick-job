@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SonorJump \u2014 "this project in\u2026" \u2014 every app links to every other app (v1.0.0, kit 0.11.0, 2026-10-31)
+   SonorJump \u2014 "this project in\u2026" \u2014 every app links to every other app (v1.1.0, kit 0.12.0, 2026-11-24)
    Bryn: "keep going to everything links to everything else. everything wired"
 
    Loaded on EVERY page by the apps.sonor.co.uk gateway (v1.9.0+) \u2014 apps add nothing. Idempotent.
@@ -8,17 +8,18 @@
    SAME project (?pid=<projects.id>, the universal project-bar deep link). Levels come from ONE rpc sonor_access_levels.
    The current app is marked; apps at level None are left out; read-only levels show "view".
    Optional: an element with [data-sonor-jump] gets the button instead.
+   v1.1.0 (2026-11-24): Site tools group (Hub "Android Utilities", #5fb39a): Network Scanner, Remotes, Site Rig (were islands).
    ═══════════════════════════════════════════════════════════════════════ */
 (function (global) {
   'use strict';
   if (global.SonorJump && global.SonorJump.VERSION) return;
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var U = global.__SONOR_USER__ || null;
   var SBC = global.__SONOR_SB__ || {};
   var SB = SBC.url || 'https://ysmvklstkzodlocttspy.supabase.co';
   var ANON = SBC.anon || '';
   var HERE = (U && U.app) || '';
-  var G = { management: ['Project Management', '#e67eb1'], projects: ['Projects & Engineering', '#2d718b'], cinema: ['Cinema', '#8058a1'], aesthetics: ['Aesthetics', '#ad9978'] };
+  var G = { management: ['Project Management', '#e67eb1'], projects: ['Projects & Engineering', '#2d718b'], cinema: ['Cinema', '#8058a1'], aesthetics: ['Aesthetics', '#ad9978'], android: ['Site tools', '#5fb39a'] };
   // key (access level) · name · path on apps.sonor.co.uk · group · extra query
   var APPS = [
     ['pm', 'Project Master', '/sonor-project-master/sonor-project-master.html', 'management'],
@@ -43,7 +44,11 @@
     ['cinema-aesthetic', 'Cinema Aesthetic', '/sonor-cinema-aesthetic/dashboard/sonor-cinema-aesthetic.html', 'aesthetics'],
     ['lighting-design', 'Lighting Design', '/sonor-lighting-design/dashboard/sonor-lighting-design.html', 'aesthetics'],
     ['garden-lighting', 'Garden Lighting', '/sonor-garden-lighting/dashboard/sonor-garden-lighting.html', 'aesthetics'],
-    ['stretched-fabric', 'Stretched Fabric', '/sonor-stretched-fabric/dashboard/sonor-stretched-fabric.html', 'aesthetics']
+    ['stretched-fabric', 'Stretched Fabric', '/sonor-stretched-fabric/dashboard/sonor-stretched-fabric.html', 'aesthetics'],
+    // v1.1.0: site tablet apps (registry group android). Pages live under public/ (the repo root page is a meta-refresh that drops ?pid).
+    ['net-scanner', 'Network Scanner', '/sonor-net-scanner/public/', 'android'],
+    ['sky-remote', 'Remotes', '/sonor-remotes/public/', 'android'],
+    ['site-rig', 'Site Rig', '/sonor-site-rig/', 'android']
   ];
   var LV = null, open = false;
 

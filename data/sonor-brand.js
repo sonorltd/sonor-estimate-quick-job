@@ -100,6 +100,15 @@ window.__SONOR_BRAND__ = {
       takeoffs:    '../APP - Takeoffs/sonor-takeoffs.html',
       takeoffsSite: '../APP - Takeoffs/site.html',   // read-only site view (Takeoffs v5.263.0+)
       netmap:      '../APP - Network Map/sonor-network-map.html',
+      'net-scanner': '../APP - Network Scanner/public/index.html',
+      'sky-remote':  '../APP - Remotes/public/index.html',
+      'site-rig':    '../APP - Site Rig/index.html',
+      'ir-rf':       '../APP - IR RF Capture/public/index.html',   // on site: http://<agent>:8052
+      'music-pi':    '../APP - Music Pi/public/index.html',   // on site: http://sonor-music.local:8054
+      'android-apps': '../APP - Android Apps/index.html',   // web demos of every Android app
+      'artnet-tester': '../APP - Android Apps/artnet/web/index.html',   // Art-Net Tester (Android, uk.co.sonor.artnet); web page = demo only (a browser can't send UDP)
+      'engineer-toolkit': '../APP - Android Apps/toolkit/web/index.html',   // Terminal (Android, uk.co.sonor.toolkit, was Engineer Toolkit); web page = demo + Web Serial
+      'sonor-home': '../APP - Android Apps/home/web/index.html',   // Sonor Home (Android, uk.co.sonor.home): the site tablets' launcher; web page = demo
       rams:        '../APP - RAMS Generator/sonor-rams-generator.html',
       leads:       '../APP - Leads/dashboard/sonor-leads.html',
       accounts:    '../APP - Accounts/dashboard/sonor-accounts.html',
@@ -190,6 +199,7 @@ window.__SONOR_BRAND__ = {
       emailTemplates: 'email-templates.html',
       manufacturers:  'manufacturers.html',
       c4Demo:         'c4-demo.html',
+      claudeSetup:    'claude-setup.html',
       igstrategy:     'ig-strategy.html',
       listrategy:     'li-strategy.html',
       business:       'business-snapshot.html',
@@ -215,6 +225,15 @@ window.__SONOR_BRAND__ = {
       takeoffs:    'https://apps.sonor.co.uk/sonor-takeoffs/',
       takeoffsSite: 'https://apps.sonor.co.uk/sonor-takeoffs/site.html',   // read-only site view (Takeoffs v5.263.0+)
       netmap:      'https://apps.sonor.co.uk/sonor-network-map/',
+      'net-scanner': 'https://apps.sonor.co.uk/sonor-net-scanner/public/',
+      'sky-remote':  'https://apps.sonor.co.uk/sonor-remotes/public/',
+      'site-rig':    'https://apps.sonor.co.uk/sonor-site-rig/',
+      'ir-rf':       'https://apps.sonor.co.uk/sonor-ir-rf/public/',
+      'music-pi':    'https://apps.sonor.co.uk/sonor-music-pi/public/',   // Music.app playlists → Control4 (Pi page on site: :8054)
+      'android-apps': 'https://apps.sonor.co.uk/sonor-android-apps/',
+      'artnet-tester': 'https://apps.sonor.co.uk/sonor-android-apps/artnet/web/',   // served by the gateway (sonor-android-apps is in the TSV); browser page = demo, the Android app does the real Art-Net
+      'engineer-toolkit': 'https://apps.sonor.co.uk/sonor-android-apps/toolkit/web/',   // served by the gateway; browser = demo house + real USB serial via Web Serial
+      'sonor-home': 'https://apps.sonor.co.uk/sonor-android-apps/home/web/',   // served by the gateway; browser = demo with sample installed apps
       rams:        'https://apps.sonor.co.uk/sonor-rams/',
       leads:       'https://apps.sonor.co.uk/sonor-leads/',
       accounts:    'https://apps.sonor.co.uk/sonor-accounts/',
@@ -305,6 +324,7 @@ window.__SONOR_BRAND__ = {
       emailTemplates: 'https://apps.sonor.co.uk/sonor-master/email-templates.html',
       manufacturers:  'https://apps.sonor.co.uk/sonor-master/manufacturers.html',
       c4Demo:         'https://apps.sonor.co.uk/sonor-master/c4-demo.html',
+      claudeSetup:    'https://apps.sonor.co.uk/sonor-master/claude-setup.html',
       igstrategy:     'https://apps.sonor.co.uk/sonor-master/ig-strategy.html',
       listrategy:     'https://apps.sonor.co.uk/sonor-master/li-strategy.html',
       business:       'https://apps.sonor.co.uk/sonor-master/business-snapshot.html',
