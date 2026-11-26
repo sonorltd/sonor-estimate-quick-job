@@ -1,5 +1,6 @@
 /**
  * sonor-wq-sync.js — CANONICAL MASTER (sonor-platform §24 — one WeQuote sync, every app)
+ * v1.7.5 · 2026-11-26 — mirrorLinks: a wq_quote_links row holding a superseded revision id moves to the latest revision (quote_id + stage + revision).
  * v1.7.4 · 2026-10-17 — the wq-proxy fallback sends the project (anon) key (apikey + Bearer) so wq-proxy can be key-gated (EDGE_KEY_ENFORCE).
  * v1.7.3 · 2026-10-17 — MERGE-ONLY (projects.metadata law): every metadata write goes through the sonor_merge_project_metadata RPC
  *   (server-side `metadata || patch`), so a key another app wrote between our read and our write can no longer be dropped. The
@@ -51,7 +52,7 @@
  */
 (function (global) {
   'use strict';
-  var VERSION = '1.7.4';
+  var VERSION = '1.7.5';
   var _cfgCache = new Map();   // client → config | false
   async function getConfig(client) {
     if (_cfgCache.has(client)) return _cfgCache.get(client);
@@ -306,11 +307,14 @@
       var r = await client.from('wq_quote_links').select('id,project_ref,quote_id,quote_no,wq_stage,wq_revision,wq_updated_at').or('project_ref.eq.' + refs.map(function (x) { return String(x).replace(/,/g, ''); }).join(',project_ref.eq.'));
       var links = (r.data || []).filter(function (l) { return l.quote_id || l.quote_no; });
       for (var i = 0; i < links.length; i++) {
-        var l = links[i]; var q = qs.find(function (x) { return (l.quote_id && Number(x.id) === Number(l.quote_id)) || (l.quote_no && String(x.quote_no) === String(l.quote_no)); });
+        // v1.7.5 — a link holding an OLDER revision id follows the latest revision (qs rows are heads carrying revisions[])
+        var l = links[i]; var q = qs.find(function (x) { return (l.quote_id && (Number(x.id) === Number(l.quote_id) || (x.revisions || []).some(function (v) { return Number(v.id) === Number(l.quote_id); }))) || (l.quote_no && String(x.quote_no) === String(l.quote_no)); });
         if (!q) continue;
-        var upd = wqIso(q.updated_at);
-        if (l.wq_stage === q.stage && (l.wq_revision || null) === (q.revision || null) && (l.wq_updated_at ? wqIso(l.wq_updated_at) : null) === upd) continue;
-        var u = await client.from('wq_quote_links').update({ wq_stage: q.stage, wq_revision: q.revision || null, wq_updated_at: upd, wq_description: q.description || null, stage_changed_at: l.wq_stage !== q.stage ? new Date().toISOString() : undefined }).eq('id', l.id);
+        var upd = wqIso(q.updated_at); var moved = l.quote_id && Number(l.quote_id) !== Number(q.id);
+        if (!moved && l.wq_stage === q.stage && (l.wq_revision || null) === (q.revision || null) && (l.wq_updated_at ? wqIso(l.wq_updated_at) : null) === upd) continue;
+        var patch = { wq_stage: q.stage, wq_revision: q.revision || null, wq_updated_at: upd, wq_description: q.description || null, stage_changed_at: l.wq_stage !== q.stage ? new Date().toISOString() : undefined };
+        if (moved) { patch.quote_id = q.id; if (q.quote_no) patch.quote_no = q.quote_no; }
+        var u = await client.from('wq_quote_links').update(patch).eq('id', l.id);
         if (!u.error) n++;
       }
     } catch (e) {}
