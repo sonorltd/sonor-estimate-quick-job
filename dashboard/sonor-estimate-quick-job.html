@@ -7,28 +7,28 @@
 <link rel="icon" href="../data/favicon.svg" type="image/svg+xml">
 <!-- Spine v1.3 import order (§2 / S-4.1.a): theme FIRST, brand.css, served kit, shared chrome, then the app layer. Synced copies — masters at workspace root. -->
 <script src="../data/sonor-theme.js"></script>
-<link rel="stylesheet" href="../data/brand.css">
+<link rel="stylesheet" href="../../sonor-shared/v1/brand.css" data-fallback="../data/brand.css" onerror="this.onerror=null;this.href=this.dataset.fallback">
 <script type="module" src="https://apps.sonor.co.uk/sonor-kit/v1/kit.js" onerror="import('./../data/kit/kit.js')"></script>
-<link rel="stylesheet" href="../data/sonor-header.css">
-<link rel="stylesheet" href="../data/sonor-components.css">
+<link rel="stylesheet" href="../../sonor-shared/v1/sonor-header.css" data-fallback="../data/sonor-header.css" onerror="this.onerror=null;this.href=this.dataset.fallback">
+<link rel="stylesheet" href="../../sonor-shared/v1/sonor-components.css" data-fallback="../data/sonor-components.css" onerror="this.onerror=null;this.href=this.dataset.fallback">
 <link rel="stylesheet" href="../data/app-vars.css">
-<link rel="stylesheet" href="../data/sonor-shell.css">
-<link rel="stylesheet" href="../data/sonor-estimate-app.css">   <!-- root master — the estimate family layout (est-* classes) -->
+<link rel="stylesheet" href="../../sonor-shared/v1/sonor-shell.css" data-fallback="../data/sonor-shell.css" onerror="this.onerror=null;this.href=this.dataset.fallback">
+<link rel="stylesheet" href="../../sonor-shared/v1/sonor-estimate-app.css" data-fallback="../data/sonor-estimate-app.css" onerror="this.onerror=null;this.href=this.dataset.fallback">   <!-- root master — the estimate family layout (est-* classes) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" integrity="sha384-GFr3yTh5lJznCbZfpTtXnwboFsxqtTQoeTZCRHhE0579KrRmlCzen5AA8ohaB5ug" crossorigin="anonymous"></script>
-<script src="../sonor-db.js"></script>
-<script src="../data/sonor-brand.js"></script>
-<script src="../data/sonor-app.js"></script>
-<script src="../data/sonor-header.js"></script>
-<script src="../data/sonor-palette.js"></script>
-<script src="../data/sonor-shell.js"></script>
-<script src="../data/sonor-project-list.js"></script>
-<script src="../data/sonor-project-bus.js"></script>
+<script src="../../sonor-shared/v1/sonor-db.js" data-fallback="../sonor-db.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-brand.js" data-fallback="../data/sonor-brand.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-app.js" data-fallback="../data/sonor-app.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-header.js" data-fallback="../data/sonor-header.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-palette.js" data-fallback="../data/sonor-palette.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-shell.js" data-fallback="../data/sonor-shell.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-project-list.js" data-fallback="../data/sonor-project-list.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-project-bus.js" data-fallback="../data/sonor-project-bus.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
 <script src="../data/sonor-project-bar.js"></script>
-<script src="../data/sonor-wq-push.js"></script>
-<script src="../data/sonor-estimate.js"></script>             <!-- root master — evalQty (the ONE expression engine) -->
-<script src="../data/sonor-estimate-templates.js"></script>   <!-- root master — offline tier of estimate_templates -->
+<script src="../../sonor-shared/v1/sonor-wq-push.js" data-fallback="../data/sonor-wq-push.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>
+<script src="../../sonor-shared/v1/sonor-estimate.js" data-fallback="../data/sonor-estimate.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>             <!-- root master — evalQty (the ONE expression engine) -->
+<script src="../../sonor-shared/v1/sonor-estimate-templates.js" data-fallback="../data/sonor-estimate-templates.js" onerror="document.write(unescape('%3Cscript src=%22'+this.dataset.fallback+'%22%3E%3C/script%3E'))"></script>   <!-- root master — offline tier of estimate_templates -->
 <script src="../data/estimate-quick-job-config.js"></script>  <!-- built-in quick-job recipes (table copy wins when newer) -->
 <script src="../data/quick-job-app.js"></script>              <!-- app-local UI -->
 <style>
